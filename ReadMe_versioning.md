@@ -1,6 +1,6 @@
-#collaborative repo management procedure 
+# Collaborative Repository : Branching/Versioning management process
 
-##A - set up your local and remote own feature branch : 
+## A - set up your local and remote own feature branch : 
 - get in your local working folder  : cd XXXXX
 - clone the repo in your local working folder  : git clone https://github.com/slvg01/immo-eliza-scraping-Qbicle.git
 - get into the repo : cd immo-eliza-scraping-Qbicle
@@ -31,11 +31,13 @@
 - click on compare & pull request or on contribute and open pull request (same)
 - make a bigger description of the change requested
 - IMPORTANT : at the top of the pull request change the base : main to base : dev  to allow the pull request to be done towards the dev branch and not in the main directly 
-- send your pull request.
+- send your pull request and inform team in discord for review process
 
 Nota Bene 1 : once the pull request towards the dev branch is validated (see below) then the dev branch will show as 1 commit ahead of the main and it will stay like this until we pull request from dev branch to the main one  
 
 Nota Bene 2 : So will be your own remote feature branch on github 
+
+Nota Bene 3 : for the review process : got into the PR, then go in commit, review and choose relevant action (§)
 
 ### 3 - once the PR code review is done and PR is validated (see question below)
 - then pull request can be made from the dev to the main on github 
