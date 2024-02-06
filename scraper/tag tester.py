@@ -14,8 +14,15 @@ for url in urls:
 title=[]
 for soup in soups:
 # - Get title
-    for elem in soup.find("span", attrs={"class": "sr-only"}):
-    # Just like that
-        title.append(elem.text)
+    table = soup.find('table', 'class' == 'classified-table')
+    rows = table.find('tbody').find_all('tr')
+
+    for row in rows:      
+        header = row.find('th', class_='classified-table__header')
+        if header and header.get_text == 'Construction year':
+            # Extract value from corresponding table data cell
+            construction_year = row.find('td', class_='classified-table__data')
+            title.append(construction_year)
+            break  # Stop iteration once the correct row is found
 
 print(title)
