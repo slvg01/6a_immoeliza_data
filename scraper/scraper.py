@@ -28,4 +28,13 @@ class ImmowebScraper:
                     counter += 1
         return(self.immoweb_urls_list)
     
+    def get_elements_value(self):
+        self.immoweb_urls_list = self.get_immoweb_urls()
+        for each_url in self.immoweb_urls_list:
+            url_content = requests.get(each_url).content
+            soup = BeautifulSoup(url_content, "html.parser")
+            for tag in soup.find_all("th", attrs={"class" : "classified-table__header"}):
+                print(tag)
+        
+    
 
