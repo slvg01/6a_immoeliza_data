@@ -32,7 +32,7 @@ class Immoweb_Scraper:
         self.variable_dict = variable_dict
         self.base_urls_list = []
         self.immoweb_urls_list = []
-        self.element_list = ["Price", "Construction year","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition"]
+        self.element_list = ["Price", "Construction year","Price","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition"]
         self.data_set = []
         self.dataset_df = pd.DataFrame()
         self.soups = []
@@ -65,7 +65,7 @@ class Immoweb_Scraper:
             soup = BeautifulSoup(url_content, "html.parser")
             for tag in soup.find_all("a", attrs={"class" : "card__title-link"}):
                 immoweb_url = tag.get("href")
-                if "www.immoweb.be" in immoweb_url and counter < 5:
+                if "www.immoweb.be" in immoweb_url and counter < 250:
                     self.immoweb_urls_list.append(immoweb_url)
                     counter += 1
         print('Immoweb URLs generated!', len(self.immoweb_urls_list))
@@ -90,13 +90,13 @@ class Immoweb_Scraper:
         print(len(self.soups))
         return self.soups
     
-               
-
+       
     def scrape_table_dataset(self):
-        """
+        """  
             Get the 1st part of the parameters from URLs extracting
             and the 2nd part of the parameters from page scraping
         """
+        
         self.immoweb_urls_list = self.get_immoweb_urls()
         for each_url in self.immoweb_urls_list:
             data_dict = {}
@@ -104,27 +104,26 @@ class Immoweb_Scraper:
             data_dict["Property ID"] = each_url.split('/')[-1]
             data_dict["Locality name"] = each_url.split('/')[-3]
             data_dict["Postal code"] = each_url.split('/')[-2]
-            data_dict["SubType of property"] = each_url.split('/')[-5]
-            
-            
-            for soup in self.soups:
-                for tag in soup.find_all("tr", attrs={"class" : "classified-table__row"}):
-                    for tag1 in tag.find_all("th", attrs={"class" : "classified-table__header"}):
-                        if tag1.string is not None:                
-                            #print(tag1.string.strip())
-                            for element in self.element_list:
-                                if element == tag1.string.strip():
-                                    tag_text = str(tag.td).strip().replace("\n","").replace(" ","")
-                                    #print(tag_text)
-                                    start_loc = tag_text.find('>')
-                                    end_loc = tag_text.find('<',tag_text.find('<')+1)
-                                    table_data = tag_text[start_loc+1:end_loc]
-                                    #print(element + ' : '+ table_data)
-                                    data_dict[element] = table_data
+            data_dict["Type of property"] = each_url.split('/')[-5]
+            url_content = requests.get(each_url).content
+            soup = BeautifulSoup(url_content, "html.parser")
+            #print(each_url)
+            for tag in soup.find_all("tr", attrs={"class" : "classified-table__row"}):
+                for tag1 in tag.find_all("th", attrs={"class" : "classified-table__header"}):
+                    if tag1.string is not None:                
+                        #print(tag1.string.strip())
+                        for element in self.element_list:
+                            if element == tag1.string.strip():
+                                tag_text = str(tag.td).strip().replace("\n","").replace(" ","")
+                                #print(tag_text)
+                                start_loc = tag_text.find('>')
+                                end_loc = tag_text.find('<',tag_text.find('<')+1)
+                                table_data = tag_text[start_loc+1:end_loc]
+                                #print(element + ' : '+ table_data)
+                                data_dict[element] = table_data
+            #print(data_dict)
             self.data_set.append(data_dict)
-        #print(self.data_set)
         return(self.data_set)
-
 
 
     def to_DataFrame (self) :
@@ -229,3 +228,5 @@ def URL_extractor(self, url):
                
         
         """
+   
+
