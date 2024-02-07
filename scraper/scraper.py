@@ -2,6 +2,7 @@
 import csv
 import requests
 from bs4 import BeautifulSoup
+import pandas as pd
 
 variable_dict = {'ID':["div","class", "classified__header--immoweb-code"],
                  'Price': ["span", "class", "sr-only"]}
@@ -11,6 +12,7 @@ urls = ['https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/111
 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/gent/9000/11114505', 'https://www.immoweb.be/en/classified/new-real-estate-project-houses/for-sale/ronse/9600/11114411', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/evere/1140/11112306', 'https://www.immoweb.be/en/classified/new-real-estate-project-houses/for-sale/wielsbeke/8710/11114368', 'https://www.immoweb.be/en/classified/apartment/for-sale/blankenberge/8370/11113359', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/uccle/1180/11114062', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/rhode-saint-genese/1640/11112309', 'https://www.immoweb.be/en/classified/apartment/for-sale/nieuwpoort/8620/11114300', 'https://www.immoweb.be/en/classified/apartment/for-sale/brussels%20city/1000/11121020', 'https://www.immoweb.be/en/classified/house/for-sale/gr%C3%82ce-hollogne/4460/11121017', 'https://www.immoweb.be/en/classified/house/for-sale/engis/4480/11121016', 'https://www.immoweb.be/en/classified/house/for-sale/quaregnon/7390/11121015', 'https://www.immoweb.be/en/classified/house/for-sale/quaregnon/7390/11121014', 'https://www.immoweb.be/en/classified/house/for-sale/fallais/4260/11121011', 'https://www.immoweb.be/en/classified/house/for-sale/moustier/5190/10985424', 'https://www.immoweb.be/en/classified/apartment/for-sale/li%C3%A8ge/4000/11121010', 'https://www.immoweb.be/en/classified/house/for-sale/florennes/5620/11121009', 'https://www.immoweb.be/en/classified/house/for-sale/florennes/5620/11121008', 'https://www.immoweb.be/en/classified/apartment/for-sale/florennes/5620/11121007', 'https://www.immoweb.be/en/classified/apartment/for-sale/florennes/5620/11121006', 'https://www.immoweb.be/en/classified/house/for-sale/auvelais/5060/11121005', 'https://www.immoweb.be/en/classified/bungalow/for-sale/yvoir/5530/11121004', 'https://www.immoweb.be/en/classified/apartment/for-sale/tournai/7500/10979750', 'https://www.immoweb.be/en/classified/apartment/for-sale/borgerhout/2140/11120997', 'https://www.immoweb.be/en/classified/apartment/for-sale/tournai/7500/10628156', 'https://www.immoweb.be/en/classified/apartment/for-sale/anderlecht/1070/10943355', 'https://www.immoweb.be/en/classified/apartment/for-sale/molenbeek-saint-jean/1080/11120995', 'https://www.immoweb.be/en/classified/apartment/for-sale/ixelles/1050/11120990', 'https://www.immoweb.be/en/classified/loft/for-sale/bruxelles/1000/11120988', 'https://www.immoweb.be/en/classified/house/for-sale/tervuren/3080/11120983', 'https://www.immoweb.be/en/classified/house/for-sale/ellezelles/7890/11120982', 'https://www.immoweb.be/en/classified/house/for-sale/ellezelles/7890/11120981', 'https://www.immoweb.be/en/classified/apartment/for-sale/bruxelles%20ville/1000/11120980', 'https://www.immoweb.be/en/classified/house/for-sale/goesnes/5353/11120979', 'https://www.immoweb.be/en/classified/house/for-sale/noduwez/1350/11120977', 'https://www.immoweb.be/en/classified/penthouse/for-sale/woluwe-saint-lambert/1200/11120969', 'https://www.immoweb.be/en/classified/penthouse/for-sale/woluwe-saint-lambert/1200/11120968', 'https://www.immoweb.be/en/classified/flat-studio/for-sale/uccle/1180/11120966', 'https://www.immoweb.be/en/classified/apartment/for-sale/ixelles/1050/11112816', 'https://www.immoweb.be/en/classified/apartment/for-sale/turnhout/2300/11113788', 'https://www.immoweb.be/en/classified/apartment/for-sale/antwerp/2000/11112337', 'https://www.immoweb.be/en/classified/apartment/for-sale/ixelles/1050/11112962', 'https://www.immoweb.be/en/classified/house/for-sale/woluwe-saint-pierre/1150/11112019', 'https://www.immoweb.be/en/classified/apartment/for-sale/waimes/4950/11119440', 'https://www.immoweb.be/en/classified/apartment/for-sale/schaerbeek/1030/11120339', 'https://www.immoweb.be/en/classified/apartment/for-sale/schaerbeek/1030/11120338', 'https://www.immoweb.be/en/classified/apartment/for-sale/bruxelles/1000/11120340', 'https://www.immoweb.be/en/classified/apartment/for-sale/vorst/1190/11120570', 'https://www.immoweb.be/en/classified/apartment/for-sale/anderlecht/1070/11112284', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/eupen/4700/11109210', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/seraing/4100/11109402', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/leuze-en-hainaut/7900/11108685', 
 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/eupen/4700/11109183', 'https://www.immoweb.be/en/classified/house/for-sale/angleur/4031/11109640', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/saint-ghislain-tertre/7333/11108610', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/deinze/9800/11111498', 'https://www.immoweb.be/en/classified/apartment/for-sale/molenbeek-saint-jean/1080/11108350', 
 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/berchem-sainte-agathe/1082/11108296', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/forest/1190/11108316', 'https://www.immoweb.be/en/classified/flat-studio/for-sale/antwerpen/2018/11110852', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/liege/4000/11109248', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/namur/5000/11108746', 'https://www.immoweb.be/en/classified/house/for-sale/flemalle/4400/11109457', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/namur-saint-servais/5002/11108956', 'https://www.immoweb.be/en/classified/apartment/for-sale/antwerp/2170/11111476', 'https://www.immoweb.be/en/classified/apartment/for-sale/nivelles/1400/11111123', 'https://www.immoweb.be/en/classified/apartment/for-sale/molenbeek-saint-jean/1080/11108349', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/namur/5001/11108883', 'https://www.immoweb.be/en/classified/ground-floor/for-sale/antwerpen%202/2020/11120965', 'https://www.immoweb.be/en/classified/house/for-sale/mons-lez-li%C3%88ge/4400/11120950', 'https://www.immoweb.be/en/classified/house/for-sale/mol/2400/11120949', 'https://www.immoweb.be/en/classified/other-property/for-sale/manage/7170/11120947', 'https://www.immoweb.be/en/classified/apartment/for-sale/brasschaat/2930/11112352', 'https://www.immoweb.be/en/classified/house/for-sale/brecht/2960/11120941', 'https://www.immoweb.be/en/classified/duplex/for-sale/knokke-heist/8300/11120939', 'https://www.immoweb.be/en/classified/service-flat/for-sale/leuven/3001/10509356', 'https://www.immoweb.be/en/classified/apartment/for-sale/wilrijk/2610/11120937', 'https://www.immoweb.be/en/classified/other-property/for-sale/manage/7170/11120933', 'https://www.immoweb.be/en/classified/apartment/for-sale/neder-over-heembeek%20%28bru.%29/1120/11120932', 'https://www.immoweb.be/en/classified/apartment/for-sale/neder-over-heembeek%20%28bru.%29/1120/11120931', 'https://www.immoweb.be/en/classified/house/for-sale/zottegem/9620/11120930', 'https://www.immoweb.be/en/classified/house/for-sale/herzele/9550/11120929', 'https://www.immoweb.be/en/classified/apartment/for-sale/wilrijk/2610/11120927', 'https://www.immoweb.be/en/classified/apartment-block/for-sale/saint-nicolas/4420/11120926', 'https://www.immoweb.be/en/classified/house/for-sale/charleroi%20couillet/6010/11120925', 'https://www.immoweb.be/en/classified/house/for-sale/loncin/4431/11120921', 'https://www.immoweb.be/en/classified/house/for-sale/brugge/8000/11120920', 'https://www.immoweb.be/en/classified/other-property/for-sale/manage/7170/11120919', 'https://www.immoweb.be/en/classified/apartment/for-sale/aalst/9300/11120918', 'https://www.immoweb.be/en/classified/house/for-sale/herstal/4040/11120916', 'https://www.immoweb.be/en/classified/house/for-sale/oupeye/4680/11120915', 'https://www.immoweb.be/en/classified/apartment/for-sale/uccle/1180/11120914', 'https://www.immoweb.be/en/classified/apartment/for-sale/uccle/1180/11120910', 'https://www.immoweb.be/en/classified/house/for-sale/sint-katherina-lombeek/1742/11120904', 'https://www.immoweb.be/en/classified/house/for-sale/geraardsbergen/9500/11120902', 'https://www.immoweb.be/en/classified/house/for-sale/rebecq/1430/11120901', 'https://www.immoweb.be/en/classified/house/for-sale/menen/8930/11120900', 'https://www.immoweb.be/en/classified/duplex/for-sale/temse/9140/11120898', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/wetteren/9230/11111496', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/molenbeek-saint-jean/1080/11108310', 'https://www.immoweb.be/en/classified/house/for-sale/frasnes-lez-anvaing/7910/11108431', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/chaudfontaine-beaufays/4052/11109147', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/asse/1730/11108274', 'https://www.immoweb.be/en/classified/loft/for-sale/verviers/4800/11108048', 'https://www.immoweb.be/en/classified/house/for-sale/branst/2880/11110540', 'https://www.immoweb.be/en/classified/house/for-sale/rendeux-bas/6987/11110608', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/zingem/9750/11111499', 'https://www.immoweb.be/en/classified/new-real-estate-project-houses/for-sale/eupen/4700/11109169', 'https://www.immoweb.be/en/classified/new-real-estate-project-houses/for-sale/marche-en-famenne/6900/11110975', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/ixelles/1050/11108547', 'https://www.immoweb.be/en/classified/house/for-sale/faimes/4317/11109944', 'https://www.immoweb.be/en/classified/villa/for-sale/saint-nicolas/4420/11108186', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/uccle/1180/11108024', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/bruxelles/1000/11108330', 'https://www.immoweb.be/en/classified/apartment/for-sale/gent/9000/11107989', 'https://www.immoweb.be/en/classified/new-real-estate-project-houses/for-sale/gent/9000/11111495', 'https://www.immoweb.be/en/classified/new-real-estate-project-houses/for-sale/zwijnaarde/9052/11111494', 'https://www.immoweb.be/en/classified/new-real-estate-project-houses/for-sale/bruxelles/1130/11108302', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/evere/1140/11108288', 'https://www.immoweb.be/en/classified/apartment/for-sale/ixelles/1050/11108239', 'https://www.immoweb.be/en/classified/house/for-sale/forest/1190/11108236', 'https://www.immoweb.be/en/classified/apartment/for-sale/ixelles/1050/11108238', 'https://www.immoweb.be/en/classified/villa/for-sale/braine-lalleud/1420/11108183', 'https://www.immoweb.be/en/classified/villa/for-sale/rhode-saint-genese/1640/11108184', 'https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118075', 'https://www.immoweb.be/en/classified/apartment/for-sale/anderlecht/1070/11119478', 'https://www.immoweb.be/en/classified/apartment/for-sale/ixelles/1050/11119851', 'https://www.immoweb.be/en/classified/new-real-estate-project-apartments/for-sale/berchem-sainte-agathe/1082/11104562', 'https://www.immoweb.be/en/classified/apartment/for-sale/heist-aan-zee/8301/11120894', 'https://www.immoweb.be/en/classified/house/for-sale/gent/9000/11120893', 'https://www.immoweb.be/en/classified/ground-floor/for-sale/bruxelles/1020/10921911', 'https://www.immoweb.be/en/classified/apartment/for-sale/westkerke/8460/11120890', 'https://www.immoweb.be/en/classified/ground-floor/for-sale/sint-niklaas/9100/11033437', 'https://www.immoweb.be/en/classified/house/for-sale/asse/1730/11120889', 'https://www.immoweb.be/en/classified/house/for-sale/borgloon/3840/11120888', 'https://www.immoweb.be/en/classified/villa/for-sale/maasmechelen/3630/11120887', 'https://www.immoweb.be/en/classified/house/for-sale/tongeren/3700/11120886', 'https://www.immoweb.be/en/classified/apartment/for-sale/schoten/2900/11120884', 'https://www.immoweb.be/en/classified/apartment/for-sale/schoten/2900/11120883', 'https://www.immoweb.be/en/classified/house/for-sale/peutie/1800/11120882', 'https://www.immoweb.be/en/classified/house/for-sale/ieper/8900/11120881', 'https://www.immoweb.be/en/classified/apartment/for-sale/molenbeek-saint-jean/1080/11120880', 'https://www.immoweb.be/en/classified/house/for-sale/torhout/8820/11120878', 'https://www.immoweb.be/en/classified/house/for-sale/ichtegem/8480/11120876', 'https://www.immoweb.be/en/classified/house/for-sale/p%C3%89ruwelz/7600/11120873', 'https://www.immoweb.be/en/classified/town-house/for-sale/la%20louvi%C3%88re/7100/11120872', 'https://www.immoweb.be/en/classified/apartment/for-sale/nivelles/1400/11120871', 'https://www.immoweb.be/en/classified/apartment/for-sale/evergem/9940/11120868', 'https://www.immoweb.be/en/classified/duplex/for-sale/wichelen/9260/11120867', 'https://www.immoweb.be/en/classified/house/for-sale/lokeren/9160/11120866', 'https://www.immoweb.be/en/classified/house/for-sale/lochristi/9080/11120864', 'https://www.immoweb.be/en/classified/house/for-sale/ichtegem/8480/11120858', 'https://www.immoweb.be/en/classified/house/for-sale/aalbeke/8511/11120857', 'https://www.immoweb.be/en/classified/house/for-sale/merksplas/2330/11120855', 'https://www.immoweb.be/en/classified/house/for-sale/ledeberg/9050/11120853', 'https://www.immoweb.be/en/classified/house/for-sale/gent/9000/10950521', 'https://www.immoweb.be/en/classified/apartment/for-sale/wommelgem/2160/11120851', 'https://www.immoweb.be/en/classified/house/for-sale/li%C3%A8ge/4000/11120850']
+
 
 
 class Immoweb_Scraper:
@@ -30,15 +32,18 @@ class Immoweb_Scraper:
         self.variable_dict = variable_dict
         self.base_urls_list = []
         self.immoweb_urls_list = []
-        self.element_list = ["Bedrooms","Living area","Kitchen type","Furnished","Terrace surface","Garden surface","Number of frontages","Swimming pool","Building condition"]
+        self.element_list = ["Price", "Construction year","Price","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition"]
         self.data_set = []
+        self.dataset_df = pd.DataFrame()
         self.soups = []
+
+
         
     def get_base_urls(self):
         """
             Get the list of base URLs after applying the filter 
             as Life Annuity as False. Go through mupltiple pages 
-            to get the list of all base URLs which will help in 
+            to get the list of all base URLs which will allow  
             fetching 10000 URLs of House or Appartment for sale.
         """
         for i in range(1,2):
@@ -46,6 +51,8 @@ class Immoweb_Scraper:
             self.base_urls_list.append(base_url)
         print('Base URLs generated!')
         return(self.base_urls_list)    
+    
+
         
     def get_immoweb_urls(self):
         """
@@ -58,11 +65,13 @@ class Immoweb_Scraper:
             soup = BeautifulSoup(url_content, "html.parser")
             for tag in soup.find_all("a", attrs={"class" : "card__title-link"}):
                 immoweb_url = tag.get("href")
-                if "www.immoweb.be" in immoweb_url and counter < 10:
+                if "www.immoweb.be" in immoweb_url and counter < 250:
                     self.immoweb_urls_list.append(immoweb_url)
                     counter += 1
         print('Immoweb URLs generated!', len(self.immoweb_urls_list))
         return(self.immoweb_urls_list)
+    
+
 
     def request_urls(self):
         """
@@ -71,18 +80,23 @@ class Immoweb_Scraper:
         Sends HTTP requests to the provided URLs, parses the HTML content,
         and stores the parsed soup objects.
         """
+        self.immoweb_urls_list = self.get_immoweb_urls()
         for url in self.immoweb_urls_list:
-            r = requests.get(url)
-            if r.status_code == 200:
-                self.soups.append(BeautifulSoup(r.content, "html.parser"))
+            url_content = requests.get(url)
+            if url_content.status_code == 200:
+                self.soups.append(BeautifulSoup(url_content.content, "html.parser"))
             else:
                 continue
         print(len(self.soups))
-
+        return self.soups
+    
+       
     def scrape_table_dataset(self):
+        """  
+            Get the 1st part of the parameters from URLs extracting
+            and the 2nd part of the parameters from page scraping
         """
-            Get the elements value from the table tag
-        """
+        
         self.immoweb_urls_list = self.get_immoweb_urls()
         for each_url in self.immoweb_urls_list:
             data_dict = {}
@@ -112,57 +126,49 @@ class Immoweb_Scraper:
         return(self.data_set)
 
 
-    def scrape_vars(self):
-        """
-        Scrape data variables from parsed HTML content.
+    def to_DataFrame (self) :
+        """ allow to convert the data_set list of dict in a DataFrame """
+        self.data_set_df = pd.DataFrame(self.data_set)
+        print(self.data_set_df.head(3))
+        return self.data_set_df     
+         
 
-        Scrape data variables specified in the variable dictionary from
-        the parsed HTML content and store them in lists.
-        """
-        self.listOfLists = [[] for _ in range(len(self.variable_dict))]
-        for i, (k, v) in enumerate(self.variable_dict.items()):
-            for soup in self.soups:
-                if soup:
-                    variable = soup.find(v[0], attrs={v[1]: v[2]})
-                    if variable:
-                        self.listOfLists[i].extend(elem for elem in variable)
-                    else:
-                        self.listOfLists[i].extend(None)
-        print('Scraping successful')
-        return self.listOfLists
+
+    def to_csv (self):
+        """ allow to convert the data_set DataFrame in CSV """
+        data_set = self.data_set_df.to_csv ('data_set.csv', index= False)
+        return data_set
+
+
+        
+
+# Example usage and testing:
+immoscrap = Immoweb_Scraper(variable_dict)
+immoscrap.get_immoweb_urls()
+immoscrap.request_urls()
+immoscrap.scrape_table_dataset()
+immoscrap.to_DataFrame()
+immoscrap.to_csv()
+
+
+"""
+
+def save_csv(self):
     
-    def get_elements_value(self):
-        for soup in self.soups:
-            for tag in soup.find_all("th", attrs={"class" : "classified-table__header"}):
-                print(tag)
-        print('Got elements')
-
-    def to_dict(self):
-        """
-        Convert scraped data to a dictionary.
-
-        Convert the scraped data lists to a dictionary where keys are
-        variable names and values are corresponding lists.
-        """
-        self.immo_dict = dict(zip(self.variable_dict.keys(), self.listOfLists))
-        print('Data was successfully converted to dictionary!')
-        return self.immo_dict
-
-    def save_csv(self):
-        """
         Save scraped data dictionary to a CSV file.
 
         Save the scraped data dictionary to a CSV file where each key-value
         pair is written as a row with the key in the first column and the
         value in the second column.
-        """
+    
         with open('immo_dict.csv', 'w', newline='') as csv_file:
             writer = csv.writer(csv_file)
-            for key, value in self.immo_dict.items():
+            for key, value in self.data_set.items():
                 writer.writerow([key, value])
+   
 
-    def URL_extractor(self, url):
-        """
+def URL_extractor(self, url):
+        
         Extract data from URLs.
 
         Extract relevant data (IDs, Postal_codes, Locality_names, Subtypes)
@@ -173,7 +179,7 @@ class Immoweb_Scraper:
 
         Returns:
         - dict: A dictionary containing extracted data.
-        """
+        
         splits = url.split('/')
         IDs = splits[-1]
         Postal_code = splits[-2]
@@ -182,15 +188,17 @@ class Immoweb_Scraper:
 
         # Return the extracted data as a dictionary
         return {'ID': IDs, 'Postal_code': Postal_code, 'Locality_name': Locality_name, 'Subtype': Subtype}
-
+        
+        
+ 
     def extract_urls(self):
-        """
+        
         Extract data from URLs and save to a CSV file.
 
         Extract relevant data (IDs, Postal_codes, Locality_names, Subtypes)
         from the provided URLs, save the data to a dictionary, and then write
         the dictionary to a CSV file.
-        """
+        
         url_dict = {}
 
         IDs = []
@@ -216,17 +224,9 @@ class Immoweb_Scraper:
                 writer.writerow([key, value])
 
         return url_dict
-    
+          
+               
         
+        """
+   
 
-# Example usage and testing:
-immoscrap = Immoweb_Scraper(variable_dict)
-immoscrap.get_immoweb_urls()
-immoscrap.request_urls()
-#immoscrap.scrape_vars()
-#immoscrap.to_dict()
-#immoscrap.save_csv()
-#immoscrap.get_elements_value()
-scraped_data = immoscrap.scrape_table_dataset()
-print(scraped_data)
-# immoscrap.extract_urls()
