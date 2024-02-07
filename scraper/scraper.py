@@ -10,9 +10,7 @@ class ImmowebScraper:
     def get_base_urls(self):
         for i in range(1,2):
             base_url = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
-            base_url_nopublicsale = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&isAPublicSale=false&page={i}&orderBy=relevance"
             self.base_urls_list.append(base_url)
-            self.base_urls_list.append(base_url_nopublicsale)
         return(self.base_urls_list)
     
     def get_immoweb_urls(self):
