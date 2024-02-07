@@ -23,9 +23,18 @@ class Immoweb_Scraper:
         """
         self.variable_dict = variable_dict
         self.base_urls_list = []
+        self.immoweb_urls_list = []
+        self.element_list = ["Bedrooms","Living area","Kitchen type","Furnished","Terrace surface","Garden surface","Number of frontages","Swimming pool","Building condition"]
+        self.data_set = []
         self.soups = []
         
     def get_base_urls(self):
+        """
+            Get the list of base URLs after applying the filter 
+            as Life Annuity as False. Go through mupltiple pages 
+            to get the list of all base URLs which will help in 
+            fetching 10000 URLs of House or Appartment for sale.
+        """
         for i in range(1,2):
             base_url = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
             self.base_urls_list.append(base_url)
@@ -33,7 +42,9 @@ class Immoweb_Scraper:
         return(self.base_urls_list)    
         
     def get_immoweb_urls(self):
-        self.immoweb_urls_list = []
+        """
+            Gets the list of Immoweb URLs from each page of base URLs
+        """
         self.base_urls_list = self.get_base_urls()
         counter = 0
         for each_url in self.base_urls_list:
@@ -61,6 +72,39 @@ class Immoweb_Scraper:
             else:
                 continue
         print(len(self.soups))
+
+    def scrape_table_dataset(self):
+        """
+            Get the elements value from the table tag
+        """
+        self.immoweb_urls_list = self.get_immoweb_urls()
+        for each_url in self.immoweb_urls_list:
+            data_dict = {}
+            data_dict["url"] = each_url
+            data_dict["Property ID"] = each_url.split('/')[-1]
+            data_dict["Locality name"] = each_url.split('/')[-3]
+            data_dict["Postal code"] = each_url.split('/')[-2]
+            data_dict["Type of property"] = each_url.split('/')[-5]
+            url_content = requests.get(each_url).content
+            soup = BeautifulSoup(url_content, "html.parser")
+            #print(each_url)
+            for tag in soup.find_all("tr", attrs={"class" : "classified-table__row"}):
+                for tag1 in tag.find_all("th", attrs={"class" : "classified-table__header"}):
+                    if tag1.string is not None:                
+                        #print(tag1.string.strip())
+                        for element in self.element_list:
+                            if element == tag1.string.strip():
+                                tag_text = str(tag.td).strip().replace("\n","").replace(" ","")
+                                #print(tag_text)
+                                start_loc = tag_text.find('>')
+                                end_loc = tag_text.find('<',tag_text.find('<')+1)
+                                table_data = tag_text[start_loc+1:end_loc]
+                                #print(element + ' : '+ table_data)
+                                data_dict[element] = table_data
+            #print(data_dict)
+            self.data_set.append(data_dict)
+        return(self.data_set)
+
 
     def scrape_vars(self):
         """
@@ -176,13 +220,7 @@ immoscrap.request_urls()
 #immoscrap.scrape_vars()
 #immoscrap.to_dict()
 #immoscrap.save_csv()
-immoscrap.get_elements_value()
+#immoscrap.get_elements_value()
+scraped_data = immoscrap.scrape_table_dataset()
+print(scraped_data)
 # immoscrap.extract_urls()
-
-
-
-
-    
-
-    
-
