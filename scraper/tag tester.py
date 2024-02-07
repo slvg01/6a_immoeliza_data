@@ -4,25 +4,17 @@ import requests
 urls = ['https://www.immoweb.be/en/classified/apartment/for-sale/zeebrugge/8380/11055156','https://www.immoweb.be/en/classified/apartment/for-sale/zeebrugge/8380/11088122']
 
 soups = []
-
-
 for url in urls:
     r = requests.get(url)
     print(url, r.status_code)
     soups.append(BeautifulSoup(r.content, "html.parser"))
 
-title=[]
+titles = []
 for soup in soups:
-# - Get title
-    table = soup.find('table', 'class' == 'classified-table')
-    rows = table.find('tbody').find_all('tr')
+    # Get title
+    elems = soup.find_all("span", attrs={"class": "overview__text"})
+    for elem in elems:
+        title_text = elem.get_text(strip=True)
+        titles.append(title_text)
 
-    for row in rows:      
-        header = row.find('th', class_='classified-table__header')
-        if header and header.get_text == 'Construction year':
-            # Extract value from corresponding table data cell
-            construction_year = row.find('td', class_='classified-table__data')
-            title.append(construction_year)
-            break  # Stop iteration once the correct row is found
-
-print(title)
+print(titles)

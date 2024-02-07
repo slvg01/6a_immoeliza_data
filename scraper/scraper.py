@@ -1,3 +1,4 @@
+
 import csv
 import requests
 from bs4 import BeautifulSoup
@@ -17,7 +18,7 @@ class Immoweb_Scraper:
     A class for scraping data from the Immoweb website.
     """
 
-    def __init__(self, variable_dict, urls) -> None:
+    def __init__(self, variable_dict) -> None:
         """
         Initialize the Immoweb_Scraper object.
 
@@ -27,8 +28,30 @@ class Immoweb_Scraper:
         - urls (list): A list of URLs to scrape.
         """
         self.variable_dict = variable_dict
-        self.urls = urls
+        self.base_urls_list = []
         self.soups = []
+        
+    def get_base_urls(self):
+        for i in range(1,2):
+            base_url = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
+            self.base_urls_list.append(base_url)
+        print('Base URLs generated!')
+        return(self.base_urls_list)    
+        
+    def get_immoweb_urls(self):
+        self.immoweb_urls_list = []
+        self.base_urls_list = self.get_base_urls()
+        counter = 0
+        for each_url in self.base_urls_list:
+            url_content = requests.get(each_url).content
+            soup = BeautifulSoup(url_content, "html.parser")
+            for tag in soup.find_all("a", attrs={"class" : "card__title-link"}):
+                immoweb_url = tag.get("href")
+                if "www.immoweb.be" in immoweb_url and counter < 10:
+                    self.immoweb_urls_list.append(immoweb_url)
+                    counter += 1
+        print('Immoweb URLs generated!', len(self.immoweb_urls_list))
+        return(self.immoweb_urls_list)
 
     def request_urls(self):
         """
@@ -37,7 +60,7 @@ class Immoweb_Scraper:
         Sends HTTP requests to the provided URLs, parses the HTML content,
         and stores the parsed soup objects.
         """
-        for url in self.urls:
+        for url in self.immoweb_urls_list:
             r = requests.get(url)
             if r.status_code == 200:
                 self.soups.append(BeautifulSoup(r.content, "html.parser"))
@@ -63,6 +86,12 @@ class Immoweb_Scraper:
                         self.listOfLists[i].extend(None)
         print('Scraping successful')
         return self.listOfLists
+    
+    def get_elements_value(self):
+        for soup in self.soups:
+            for tag in soup.find_all("th", attrs={"class" : "classified-table__header"}):
+                print(tag)
+        print('Got elements')
 
     def to_dict(self):
         """
@@ -143,11 +172,23 @@ class Immoweb_Scraper:
                 writer.writerow([key, value])
 
         return url_dict
+    
+        
 
 # Example usage and testing:
-immoscrap = Immoweb_Scraper(variable_dict, urls)
+immoscrap = Immoweb_Scraper(variable_dict)
+immoscrap.get_immoweb_urls()
 immoscrap.request_urls()
-immoscrap.scrape_vars()
-immoscrap.to_dict()
-immoscrap.save_csv()
+#immoscrap.scrape_vars()
+#immoscrap.to_dict()
+#immoscrap.save_csv()
+immoscrap.get_elements_value()
 # immoscrap.extract_urls()
+
+
+
+
+    
+
+    
+
