@@ -1,12 +1,13 @@
-import timeit
-import threading
+import timeit 
+import time
+from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import SSLError
 # Define your function here
 def get_base_urls():
     base_urls_list = []
-    for i in range(1,3):
+    for i in range(1,30):
         base_url = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
         base_urls_list.append(base_url)
     print('Base URLs generated!')
@@ -44,41 +45,38 @@ def request_urls_basic(immoweb_urls_list):
                 continue
         print(len(soups))
 
+
+soups = []
+
 def request_url(session, url):
     global soups
-    with session.get(url) as response:
-        if response.status_code == 200:
-            html_content = response.content
-            soup = BeautifulSoup(html_content, "html.parser")
-            soups.append(soup)
+    try:
+        with session.get(url) as response:
+            if response.status_code == 200:
+                html_content = response.content
+                soup = BeautifulSoup(html_content, "html.parser")
+                soups.append(soup)
+    except SSLError as e:
+        print(f"SSL Error occurred. Error: {e}")
 
-def request_urls(urls):
+def request_urls(session, urls):  
     global soups
-    with requests.Session() as session:
-        threads = []
-        for url in urls:
-            thread = threading.Thread(target=request_url, args=(session, url))
-            thread.start()
-            threads.append(thread)
-
-        for thread in threads:
-            thread.join()
-
-# Reset the soups list
-soups = []
-
-# Get the list of Immoweb URLs
-a = get_immoweb_urls_session()
-
-# Time the execution of the request_urls function
-#execution_time = timeit.timeit(lambda: request_urls(a), number=1)
-#print("Execution time:", execution_time, "seconds")
+    soups = []  
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        #time.sleep(1)
+        results = executor.map(lambda url: request_url(session, url), urls)
+    return soups
 
 # Reset the soups list for the second execution
-soups = []
+
+# Get the list of Immoweb URLs
+a = get_immoweb_urls_session()  
+
+# Create a requests Session object
+session = requests.Session()
 
 # Time the execution of the request_urls function again
-execution_time = timeit.timeit(lambda: request_urls(a), number=1)
+execution_time = timeit.timeit(lambda: request_urls(session, a), number=1)
 print("Execution time:", execution_time, "seconds")
 
 # Print the length of the soups list
