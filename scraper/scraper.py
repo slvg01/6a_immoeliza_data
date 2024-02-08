@@ -1,5 +1,5 @@
 
-import csv
+from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -34,7 +34,7 @@ class Immoweb_Scraper:
             to get the list of all base URLs which will allow  
             fetching 10000 URLs of House or Appartment for sale.
         """
-        for i in range(1,2):
+        for i in range(1,10):
             base_url = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
             self.base_urls_list.append(base_url)
         print('Base URLs generated!')
@@ -42,87 +42,76 @@ class Immoweb_Scraper:
     
 
         
-    def get_immoweb_urls(self):
+    def get_immoweb_urls(self, session, url):
         """
-            Gets the list of Immoweb URLs from each page of base URLs
+        Gets the list of Immoweb URLs from each page of base URLs
         """
-        self.base_urls_list = self.get_base_urls()
-        counter = 0
-        for each_url in self.base_urls_list:
-            url_content = requests.get(each_url).content
-            soup = BeautifulSoup(url_content, "html.parser")
-            for tag in soup.find_all("a", attrs={"class" : "card__title-link"}):
-                immoweb_url = tag.get("href")
-                if "www.immoweb.be" in immoweb_url and counter < 10 and "new-real-estate-project" not in immoweb_url:
-                    self.immoweb_urls_list.append(immoweb_url)
-                    counter += 1
-        self.immoweb_urls_list = list(dict.fromkeys(self.immoweb_urls_list))
-        print('Immoweb URLs generated!', len(self.immoweb_urls_list))
-        return(self.immoweb_urls_list)
-    
-
-
-    def request_urls(self):
-        """
-        Request URLs and parse HTML content.
-
-        Sends HTTP requests to the provided URLs, parses the HTML content,
-        and stores the parsed soup objects.
-        """
-        self.immoweb_urls_list = self.get_immoweb_urls()
-        for url in self.immoweb_urls_list:
-            url_content = requests.get(url)
-            if url_content.status_code == 200:
-                self.soups.append(BeautifulSoup(url_content.content, "html.parser"))
-            else:
-                continue
-        print(len(self.soups))
-        return self.soups
-    
+        with session.get(url) as url_content:
+            self.base_urls_list = self.get_base_urls()
+            counter = 0
+            for each_url in self.base_urls_list:
+                url_content = session.get(each_url).content
+                soup = BeautifulSoup(url_content, "html.parser")
+                for tag in soup.find_all("a", attrs={"class": "card__title-link"}):
+                    immoweb_url = tag.get("href")
+                    if "www.immoweb.be" in immoweb_url and counter < 100 and "new-real-estate-project" not in immoweb_url:
+                        self.immoweb_urls_list.append(immoweb_url)
+                        counter += 1
+            self.immoweb_urls_list = list(dict.fromkeys(self.immoweb_urls_list))
+            print('Immoweb URLs generated!', len(self.immoweb_urls_list))
+            return self.immoweb_urls_list
+      
        
-    def scrape_table_dataset(self):
-        """  
-            Get the 1st part of the parameters from URLs extracting
-            and the 2nd part of the parameters from page scraping
+    def scrape_table_dataset(self, url):
         """
-        
-        self.immoweb_urls_list = self.get_immoweb_urls()
-        for each_url in self.immoweb_urls_list:
-            data_dict = {}
-            data_dict["url"] = each_url
-            data_dict["Property ID"] = each_url.split('/')[-1]
-            data_dict["Locality name"] = each_url.split('/')[-3]
-            data_dict["Postal code"] = each_url.split('/')[-2]
-            data_dict["Subtype of property"] = each_url.split('/')[-5]
-            url_content = requests.get(each_url).content
-            soup = BeautifulSoup(url_content, "html.parser")
-            #print(each_url)
-            for tag in soup.find("p" , attrs={"class" : "classified__description"}):
-                if "open haard" in tag.text.lower() or "cheminee" in tag.text.lower() or "feu ouvert" in tag.text.lower() or "open fire" in tag.text.lower():
-                    data_dict["Open Fire"] = 1
-                else:
-                    data_dict["Open Fire"] = 0
-            for tag in soup.find("p" , attrs={"class" : "classified__price"}):
-                    if tag.text.startswith("€"):
-                        data_dict["Price"] = tag.text[1:]
-            for tag in soup.find_all("tr", attrs={"class" : "classified-table__row"}):
-                for tag1 in tag.find_all("th", attrs={"class" : "classified-table__header"}):
-                    if tag1.string is not None:                
-                        #print(tag1.string.strip())
-                        for element in self.element_list:
-                            if element == tag1.string.strip():
-                                tag_text = str(tag.td).strip().replace("\n","").replace(" ","")
-                                #print(tag_text)
-                                start_loc = tag_text.find('>')
-                                end_loc = tag_text.find('<',tag_text.find('<')+1)
-                                table_data = tag_text[start_loc+1:end_loc]
-                                #print(element + ' : '+ table_data)
-                                data_dict[element] = table_data
-            #print(data_dict)
-            self.data_set.append(data_dict)
-        return(self.data_set)
+        Get the 1st part of the parameters from URLs extracting
+        and the 2nd part of the parameters from page scraping
+        """
+        with requests.Session() as session:
+            self.immoweb_urls_list = self.get_immoweb_urls(session, url)
+            with ThreadPoolExecutor() as executor:
+                results = executor.map(self.process_url, self.immoweb_urls_list)
+                for result in results:
+                    self.data_set.append(result)
+            return self.data_set
 
-    def update_datase(self):
+    def process_url(self, each_url):
+        """
+        Process each URL to scrape data.
+        """
+        data_dict = {}
+        data_dict["url"] = each_url
+        data_dict["Property ID"] = each_url.split('/')[-1]
+        data_dict["Locality name"] = each_url.split('/')[-3]
+        data_dict["Postal code"] = each_url.split('/')[-2]
+        data_dict["Subtype of property"] = each_url.split('/')[-5]
+        
+        # Scraping logic
+        with requests.Session() as session:
+            url_content = session.get(each_url).content
+        soup = BeautifulSoup(url_content, "html.parser")
+        for tag in soup.find("div",attrs={"id" : "classified-description-content-text"}).find_all("p"):
+            if "open haard" in tag.text.lower() or "cheminee" in tag.text.lower() or "feu ouvert" in tag.text.lower() or "open fire" in tag.text.lower():
+                data_dict["Open Fire"] = 1
+            else:
+                data_dict["Open Fire"] = 0
+        for tag in soup.find("p", attrs={"class": "classified__price"}):
+            if tag.text.startswith("€"):
+                data_dict["Price"] = tag.text[1:]
+        for tag in soup.find_all("tr", attrs={"class": "classified-table__row"}):
+            for tag1 in tag.find_all("th", attrs={"class": "classified-table__header"}):
+                if tag1.string is not None:
+                    for element in self.element_list:
+                        if element == tag1.string.strip():
+                            tag_text = str(tag.td).strip().replace("\n", "").replace(" ", "")
+                            start_loc = tag_text.find('>')
+                            end_loc = tag_text.find('<', tag_text.find('<') + 1)
+                            table_data = tag_text[start_loc + 1:end_loc]
+                            data_dict[element] = table_data
+        
+        return data_dict
+
+    def update_database(self):
         for each_dict in self.data_set:
             dict_elem = []
             for each_element in each_dict:
@@ -137,7 +126,7 @@ class Immoweb_Scraper:
     def to_DataFrame (self) :
         """ allow to convert the data_set list of dict in a DataFrame """
         self.data_set_df = pd.DataFrame(self.data_set)
-        print(self.data_set_df.head(3))
+        print(self.data_set_df)
         return self.data_set_df     
          
 
@@ -149,12 +138,15 @@ class Immoweb_Scraper:
 
 
         
+url = "https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page=1&orderBy=relevance"
 
 # Example usage and testing:
 immoscrap = Immoweb_Scraper()
-immoscrap.get_immoweb_urls()
-immoscrap.request_urls()
-immoscrap.scrape_table_dataset()
-immoscrap.update_datase()
-immoscrap.to_DataFrame()
-immoscrap.to_csv()
+#immoscrap.get_immoweb_urls()
+#immoscrap.request_urls()
+immoscrap.scrape_table_dataset(url)
+immoscrap.update_database()
+print(len(immoscrap.data_set))
+#print(len(immoscrap.data_set))
+#immoscrap.to_DataFrame()
+#immoscrap.to_csv()
