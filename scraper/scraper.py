@@ -1,4 +1,6 @@
-
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+import time
 import csv
 import requests
 from bs4 import BeautifulSoup
@@ -118,11 +120,28 @@ class Immoweb_Scraper:
                                 table_data = tag_text[start_loc+1:end_loc]
                                 #print(element + ' : '+ table_data)
                                 data_dict[element] = table_data
+            # Initialise the webdriver
+            chrome_options = Options()
+            chrome_options.headless = True
+            driver = webdriver.Chrome(options=chrome_options)
+            driver.get(each_url)
+
+            time.sleep(5)  # ensure the page is fully loaded
+
+    # Render the dynamic content to static HTML
+    html = driver.page_source
+    # print(html)
+
+    # Parse the static HTML
+    soup = BeautifulSoup(html, "html.parser")
+    divs = soup.find("div", {"class": "flag-list container"})
+    output = divs.text
+    print(f"Sale Type  : {output}")
             #print(data_dict)
             self.data_set.append(data_dict)
         return(self.data_set)
 
-    def update_datase(self):
+    def update_dataset(self):
         for each_dict in self.data_set:
             dict_elem = []
             for each_element in each_dict:
@@ -155,6 +174,6 @@ immoscrap = Immoweb_Scraper()
 immoscrap.get_immoweb_urls()
 immoscrap.request_urls()
 immoscrap.scrape_table_dataset()
-immoscrap.update_datase()
+immoscrap.update_dataset()
 immoscrap.to_DataFrame()
 immoscrap.to_csv()
