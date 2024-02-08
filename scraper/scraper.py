@@ -32,7 +32,7 @@ class Immoweb_Scraper:
         self.variable_dict = variable_dict
         self.base_urls_list = []
         self.immoweb_urls_list = []
-        self.element_list = ["Price", "Construction year","Price","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition"]
+        self.element_list = ["Construction year","Price","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition"]
         self.data_set = []
         self.dataset_df = pd.DataFrame()
         self.soups = []
