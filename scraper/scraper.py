@@ -65,7 +65,7 @@ class Immoweb_Scraper:
             soup = BeautifulSoup(url_content, "html.parser")
             for tag in soup.find_all("a", attrs={"class" : "card__title-link"}):
                 immoweb_url = tag.get("href")
-                if "www.immoweb.be" in immoweb_url and counter < 50 and "new-real-estate-project" not in immoweb_url:
+                if "www.immoweb.be" in immoweb_url and counter < 10:
                     self.immoweb_urls_list.append(immoweb_url)
                     counter += 1
         print('Immoweb URLs generated!', len(self.immoweb_urls_list))
@@ -104,7 +104,7 @@ class Immoweb_Scraper:
             data_dict["Property ID"] = each_url.split('/')[-1]
             data_dict["Locality name"] = each_url.split('/')[-3]
             data_dict["Postal code"] = each_url.split('/')[-2]
-            data_dict["Type of property"] = each_url.split('/')[-5]
+            data_dict["Subtype of property"] = each_url.split('/')[-5]
             url_content = requests.get(each_url).content
             soup = BeautifulSoup(url_content, "html.parser")
             #print(each_url)
@@ -224,8 +224,17 @@ def URL_extractor(self, url):
                 writer.writerow([key, value])
 
         return url_dict
-          
-               
+    
         
-        """
-   
+
+# Example usage and testing:
+immoscrap = Immoweb_Scraper(variable_dict)
+immoscrap.get_immoweb_urls()
+immoscrap.request_urls()
+#immoscrap.scrape_vars()
+#immoscrap.to_dict()
+#immoscrap.save_csv()
+#immoscrap.get_elements_value()
+scraped_data = immoscrap.scrape_table_dataset()
+print(scraped_data)
+# immoscrap.extract_urls()
