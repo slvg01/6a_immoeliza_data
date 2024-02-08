@@ -55,7 +55,7 @@ class Immoweb_Scraper:
                 soup = BeautifulSoup(url_content, "html.parser")
                 for tag in soup.find_all("a", attrs={"class": "card__title-link"}):
                     immoweb_url = tag.get("href")
-                    if "www.immoweb.be" in immoweb_url and counter < 30 and "new-real-estate-project" not in immoweb_url:
+                    if "www.immoweb.be" in immoweb_url and counter < 50 and "new-real-estate-project" not in immoweb_url:
                         self.immoweb_urls_list.append(immoweb_url)
                         counter += 1
             self.immoweb_urls_list = list(dict.fromkeys(self.immoweb_urls_list))
@@ -140,16 +140,24 @@ class Immoweb_Scraper:
         col_to_conv = ['Price', 'Swimming pool', 'Construction year','Number of frontages', 'Living area', 'Bedrooms', 'Terrace surface', 'Surface of the plot', 'Garden surface'] 
         for col in col_to_conv:
             self.data_set_df[col] = pd.to_numeric(self.data_set_df[col])
-        self.data_set_df['TOS : New Construction'] = self.data_set_df['Construction year'].apply(lambda x: 0 if np.isnan(x) or x < 2023 else 1)
-        self.data_set_df['TOS : Tenement building'] = self.data_set_df['Subtype of property'].apply(lambda x : 1 if x in ['mixed-use-building', 'apartment-block'] else 0)
-        self.data_set_df['Type of property'] = self.data_set_df['Subtype of property'].apply(lambda x : 'Apartment' if x in ['apartment', 'loft', 'penthouse','duplex', 'ground-floor', 'flat-studio', 'service-flat'] else 'House')
-        self.data_set_df['Building conditon status'] = self.data_set_df['Building condition'].apply(lambda x : 1 if x in ['Asnew', 'Good', 'Justrenovated'] else 0)
-        self.data_set_df['Furnished'] = self.data_set_df['Furnished'].apply(lambda x : 1 if x == 'yes' else 0)
-        self.data_set_df['Kitchen equipped'] = self.data_set_df['Kitchen type'].apply(lambda x : 0 if x in ['Notinstalled','0'] else 1)
-        self.data_set_df['Terrace'] = self.data_set_df['Terrace surface'].apply(lambda x : 1 if x  >0 else 0)
-        self.data_set_df['Garden'] = self.data_set_df['Garden surface'].apply(lambda x : 1 if x  >0 else 0)
-        self.data_set_df = self.data_set_df.rename(columns = {'url':'URL','Surface of the plot': 'Plot Surface','Open Fire' :'Open fire', 'Locality name':'Locality', 'Subtype of property': 'Subtype', 'Living area':'Living suface', 'Bedrooms':'Nb of Bedrooms'})
-        new_col_order = ['URL','Property ID','Locality', 'Postal code', 'Price','Construction year','TOS : New Construction', 'TOS : Tenement building', 'Type of property', 'Subtype','Building conditon status', 'Building condition', 'Furnished', 'Living suface','Nb of Bedrooms','Kitchen equipped', 'Kitchen type','Open fire','Swimming pool','Plot Surface', 'Terrace','Terrace surface','Garden', 'Garden surface', 'Number of frontages']
+        col_to_none = ['url','Property ID',	'Locality name','Postal code','Subtype of property', 'Open Fire','Price','Construction year', 'Subtype of property',  'Building condition','Furnished', 'Living area', 'Bedrooms', 'Kitchen type', 'Swimming pool', 'Surface of the plot', 'Terrace surface', 'Garden surface',	'Number of frontages']
+        for col in col_to_none:
+            self.data_set_df.loc[self.data_set_df[col] == 0, col] = 'None'
+            #np.isnan(x) or
+        self.data_set_df['TOS : New Construction'] = self.data_set_df['Construction year'].apply(lambda x: 'None'  if  x == 'None' else( 0 if x < 2023 else 1))
+        self.data_set_df['TOS : Tenement building'] = self.data_set_df['Subtype of property'].apply(lambda x : 'None' if x == 'None' else (1 if x in ['mixed-use-building', 'apartment-block'] else 0))
+        self.data_set_df['Type of property'] = self.data_set_df['Subtype of property'].apply(lambda x : 'None' if x == 'None' else ('Apartment' if x in ['apartment', 'loft', 'penthouse','duplex', 'ground-floor', 'flat-studio', 'service-flat'] else 'House'))
+        self.data_set_df['Building conditon status'] = self.data_set_df['Building condition'].apply(lambda x : 'None' if x =='None' else ( 1 if x in ['Asnew', 'Good', 'Justrenovated'] else 0))
+        self.data_set_df['Furnished'] = self.data_set_df['Furnished'].apply(lambda x : 'None' if x =='None' else (1 if x == 'yes' else 0))
+        self.data_set_df['Kitchen equipped'] = self.data_set_df['Kitchen type'].apply(lambda x : 'None' if x =='None' else (0 if x == 'Notinstalled' else 1))
+        self.data_set_df['Terrace'] = self.data_set_df['Terrace surface'].apply(lambda x : 0 if x == 'None' else ( 1 if x  > 0 else 0))
+        self.data_set_df['Garden'] = self.data_set_df['Garden surface'].apply(lambda x : 0 if x == 'None' else (1 if x  > 0 else 0))
+        replace_dict1 = {'Asnew': 'As new', 'Justrenovated': 'Just renovated', 'Tobedoneup' : 'To be done', 'Torenovate':'To renovate'}
+        replace_dict2 = {'Hyperequipped': 'Hyper equipped', 'Semiequipped': 'Semi equipped', 'USAhyperequipped' : 'USA hyper equipped', 'USAinstalled':'USA installed', 'Notinstalled' : 'Not installed'}
+        self.data_set_df['Building condition'] = self.data_set_df['Building condition'].replace(replace_dict1)
+        self.data_set_df['Kitchen type'] = self.data_set_df['Kitchen type'].replace(replace_dict2)
+        self.data_set_df = self.data_set_df.rename(columns = {'url':'URL','Surface of the plot': 'Plot surface','Open Fire' :'Open fire', 'Locality name':'Locality', 'Subtype of property': 'Subtype', 'Living area':'Living suface', 'Bedrooms':'Nb of Bedrooms'})
+        new_col_order = ['URL','Property ID','Locality', 'Postal code', 'Price','Construction year','TOS : New Construction', 'TOS : Tenement building', 'Type of property', 'Subtype','Building conditon status', 'Building condition', 'Furnished', 'Living suface','Nb of Bedrooms','Kitchen equipped', 'Kitchen type','Open fire','Swimming pool','Plot surface', 'Terrace','Terrace surface','Garden', 'Garden surface', 'Number of frontages']
         self.data_set_df = self.data_set_df[new_col_order]
         print(self.data_set_df.head(10))
         return self.data_set_df         
