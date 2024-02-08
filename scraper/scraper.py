@@ -3,6 +3,7 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import numpy as np
 
 variable_dict = {'ID':["div","class", "classified__header--immoweb-code"],
                  'Price': ["span", "class", "sr-only"]}
@@ -65,7 +66,7 @@ class Immoweb_Scraper:
             soup = BeautifulSoup(url_content, "html.parser")
             for tag in soup.find_all("a", attrs={"class" : "card__title-link"}):
                 immoweb_url = tag.get("href")
-                if "www.immoweb.be" in immoweb_url and counter < 250:
+                if "www.immoweb.be" in immoweb_url and counter < 10:
                     self.immoweb_urls_list.append(immoweb_url)
                     counter += 1
         print('Immoweb URLs generated!', len(self.immoweb_urls_list))
@@ -129,7 +130,18 @@ class Immoweb_Scraper:
     def to_DataFrame (self) :
         """ allow to convert the data_set list of dict in a DataFrame """
         self.data_set_df = pd.DataFrame(self.data_set)
-        print(self.data_set_df.head(3))
+        col_to_conv = ['Construction year','Number of frontages', 'Living area', 'Bedrooms', 'Terrace surface', 'Surface of the plot', 'Garden surface'] 
+        for col in col_to_conv:
+            self.data_set_df[col] = pd.to_numeric(self.data_set_df[col])
+        self.data_set_df['TOS : New Construction'] = self.data_set_df['Construction year'].apply(lambda x: 0 if np.isnan(x) or x < 2023 else 1)
+        self.data_set_df['TOS : Tenement building'] = self.data_set_df['Subtype of property'].apply(lambda x : 1 if x in [' Mixed-use building for sale', ' Apartment block  for sale'] else 0)
+        self.data_set_df['Type of property'] = self.data_set_df['Subtype of property'].apply(lambda x : 'Apartment' if x in ['apartment', 'new-real-estate-project-apartments'] else 'House')
+        self.data_set_df['Furnished'] = self.data_set_df['Furnished'].apply(lambda x : 1 if x == 'yes' else 0)
+        self.data_set_df['Equipped kitchen'] = self.data_set_df['Kitchen type'].apply(lambda x : '1' if x in ['Hyperequipped', 'Installed', 'Semiequipped'] else 0)
+        self.data_set_df = self.data_set_df.rename(columns = {'url':'URL','Surface of the plot': 'Plot Surface', 'Locality name':'Locality', 'Subtype of property': 'Subtype', 'Living area':'Living suface', 'Bedrooms':'Nb of Bedrooms'})
+        new_col_order = ['URL','Property ID','Locality', 'Postal code', 'TOS : New Construction', 'TOS : Tenement building', 'Type of property', 'Subtype','Construction year', 'Building condition', 'Furnished', 'Living suface','Nb of Bedrooms', 'Equipped kitchen','Plot Surface', 'Terrace surface', 'Garden surface', 'Number of frontages']
+        self.data_set_df = self.data_set_df[new_col_order]
+        print(self.data_set_df.head(10))
         return self.data_set_df     
          
 

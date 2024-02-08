@@ -1,0 +1,6 @@
+requests==2.31
+bs4==0.02
+BeautifulSoup
+pandas==2.1.4
+numpy==1.24.3
+csv
