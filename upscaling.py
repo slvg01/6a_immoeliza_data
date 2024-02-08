@@ -1,9 +1,11 @@
 import timeit 
-import time
 from concurrent.futures import ThreadPoolExecutor
 from bs4 import BeautifulSoup
 import requests
+import multiprocessing
 from requests.exceptions import SSLError
+
+workers = int(multiprocessing.cpu_count() * 0.8)
 # Define your function here
 def get_base_urls():
     base_urls_list = []
@@ -47,7 +49,6 @@ def request_urls_basic(immoweb_urls_list):
 
 
 soups = []
-
 def request_url(session, url):
     global soups
     try:
@@ -62,7 +63,7 @@ def request_url(session, url):
 def request_urls(session, urls):  
     global soups
     soups = []  
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    with ThreadPoolExecutor(max_workers=workers) as executor:
         #time.sleep(1)
         results = executor.map(lambda url: request_url(session, url), urls)
     return soups
