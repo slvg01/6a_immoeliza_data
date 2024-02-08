@@ -104,7 +104,7 @@ class Immoweb_Scraper:
             data_dict["Property ID"] = each_url.split('/')[-1]
             data_dict["Locality name"] = each_url.split('/')[-3]
             data_dict["Postal code"] = each_url.split('/')[-2]
-            data_dict["Type of property"] = each_url.split('/')[-5]
+            data_dict["Subtype of property"] = each_url.split('/')[-5]
             url_content = requests.get(each_url).content
             soup = BeautifulSoup(url_content, "html.parser")
             #print(each_url)
