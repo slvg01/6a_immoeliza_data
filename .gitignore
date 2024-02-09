@@ -161,3 +161,11 @@ cython_debug/
 immo_dict.csv
 url_dict.csv
 scraper/URL_extractor.py
+data/data_set.csv
+data/clean_data/data_set_CEAN.csv
+data/clean_data/data_set_RAW.csv
+data/clean_data/data_set.csv
+data_set.csv
+17K data_set.csv
+data_set.csv
+df.py
