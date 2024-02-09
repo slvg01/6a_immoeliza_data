@@ -60,7 +60,7 @@ Select the amount of pages you want to Scrape. For each page all properties are 
 [Maarten Knaepen](https://github.com/MaartenKnaepen)
 
 ## Visualization
-[![alt text](http://url/to/img)](https://www.nomnoml.com/#file/Immoweb%20Scraper%20Dependency%20Graph.png)
+![alt text]([https://github.com/slvg01/immo-eliza-scraping-Qbicle/blob/maarten/immoweb_scraper_viz.png)
 
 
 
