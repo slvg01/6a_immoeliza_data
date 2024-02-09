@@ -8,8 +8,9 @@ Clone the repository to your local machine using the command:
 ```
 git clone https://github.com/slvg01/immo-eliza-scraping-Qbicle.git
 ```
+```
 cd immo-eliza-scraping-Qbicle
-
+```
 Ensure that you have the required dependencies installed by executing:
 ```
 pip install -r requirements.txt
@@ -21,7 +22,7 @@ python main.py
 ```
 Follow the on-screen prompts to:
 
-Select the amount of pages you want to Scrape. Per page 40 potential homes are scraped.
+Select the amount of pages you want to Scrape. For each page all properties are scraped. Note that new real estate projects will be skipped because they contain separate links to available properties. These separate links are included in the scraped data.
 
 ## Output
 | Variable name            | Content                                                               | Type    |
