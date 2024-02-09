@@ -24,43 +24,34 @@ Follow the on-screen prompts to:
 Select the amount of pages you want to Scrape. Per page 40 potential homes are scraped.
 
 ## Output
-LeaderScraper provides the following features:
-
-URL: The URL that was scraped, string
-
-Property ID: The unique identifier of the property, string
-
-Locality: The city or village where the property is located, string
-
-Postal code: Postal code of the locality, string
-
-TOS : New Construction
-
-TOS : Tenement building
-
-Type of property: either appartment or house, string
-
-Subtype: subdivision of property type, string
-
-Construction year: Year the property was built, integer
-
-Building condition: Condition of the property, string
-
-Furnished: 0 for not furnished, else 1
-
-Living suface: amount of living surface in square meter, int
-
-Nb of Bedrooms: Number of bedrooms, int
-
-Equipped kitchen: 0 for not equipped, else 1
-
-Plot Surface: Surface of the plot area in square meter, int
-
-Terrace surface: Surface of the terrace in square meter, int
-
-Garden surface: Surface of the garden in square meter, int
-
-Number of frontages: Amount of frontages, int
+| Variable name            | Content                                                               | Type    |
+| ------------------------ | --------------------------------------------------------------------- | ------- |
+| URL                      | URL to access the property                                            | string  |
+| Property ID              | Unique Identifier of the property                                     | string  |
+| Locality                 | Name of the city or village where the property is located             | string  |
+| Postal code              | Postal code of the locality                                           | string  |
+| Price (euro)             | Price in euro of the property                                         | integer |
+| Energy class             | Energy class of the property from A to F                              | string  |
+| Construction year        | Year the property was built                                           | integer |
+| TOS : New Construction   | Flag for New construction. 1 for new, 0 for older                     | integer |
+| TOS : Tenement building  | Flag for tenement building. 1 for yes, 0 for no                       | integer |
+| Type of property         | Describes wether the property is a house or appartment                | string  |
+| Subtype                  | More detailed classification of the property type                     | string  |
+| Building conditon status | Flag for building condition. 1 for good, 0 for bad                    | integer |
+| Building condition       | Description of the building condition                                 | string  |
+| Furnished                | Flag for furnishing. 1 is furnished, 0 is not furnished               | integer |
+| Living surface (sqm)     | Surface of the living area in square meters                           | integer |
+| Nb of Bedrooms           | Number of bedrooms in the property                                    | integer |
+| Kitchen equipped         | Flag for kitchen equipment. 1 is equipped, 0 is not equipped          | integer |
+| Kitchen type             | Description of the kitchen equipment                                  | string  |
+| Open fire                | Flag for open fire. 1 is present, 0 is absent                         | integer |
+| Swimming pool            | Flag for swimming pool. 1 is present, 0 is absent                     | integer |
+| Plot surface (sqm)       | Surface of the entire plot (garden + living surface) in square meters | integer |
+| Terrace                  | Flag for terrace. 1 is present, 0 is absent                           | integer |
+| Terrace surface (sqm)    | Surface of the terrace in square meters                               | integer |
+| Garden                   | Flag for garden. 1 is present, 0 is absent                            | integer |
+| Garden surface (sqm)     | Surface of the garden in square meters                                | integer |
+| Number of frontages      | Number of frontages the property has                                  | integer |
 
 ## Contributors
 [Mahak Behl](https://github.com/MahakBehl)

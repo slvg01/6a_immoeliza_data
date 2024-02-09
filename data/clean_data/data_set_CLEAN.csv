@@ -1,0 +1,52 @@
+URL,Property ID,Locality,Postal code,Price (euro),Energy class,Construction year,TOS : New Construction,TOS : Tenement building,Type of property,Subtype,Building conditon status,Building condition,Furnished,Living surface (sqm),Nb of Bedrooms,Kitchen equipped,Kitchen type,Open fire,Swimming pool,Plot surface (sqm),Terrace,Terrace surface (sqm),Garden,Garden surface (sqm),Number of frontages
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118082,11118082,gavere,9890,269700,A,2021,0,0,Apartment,apartment,1,As new,0,76,1,1,Hyper equipped,None,None,None,1,11,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118079,11118079,gavere,9890,275450,A,2021,0,0,Apartment,apartment,1,As new,0,76,1,1,Hyper equipped,None,None,None,1,11,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118089,11118089,gavere,9890,324200,A,2021,0,0,Apartment,apartment,1,As new,0,97,2,1,Hyper equipped,None,None,None,1,10,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118087,11118087,gavere,9890,335700,A,2021,0,0,Apartment,apartment,1,As new,0,97,2,1,Hyper equipped,None,None,None,1,10,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118088,11118088,gavere,9890,368500,A,2021,0,0,Apartment,apartment,1,As new,0,112,3,1,Hyper equipped,None,None,None,1,10,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118086,11118086,gavere,9890,368500,A,2021,0,0,Apartment,apartment,1,As new,0,111,3,1,Hyper equipped,None,None,None,1,10,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118083,11118083,gavere,9890,373650,A,2021,0,0,Apartment,apartment,1,As new,0,126,2,1,Hyper equipped,None,None,None,1,11,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118080,11118080,gavere,9890,377150,A,2021,0,0,Apartment,apartment,1,As new,0,126,3,1,Hyper equipped,None,None,None,1,11,0,None,4
+https://www.immoweb.be/en/classified/apartment/for-sale/gavere/9890/11118076,11118076,gavere,9890,419760,A,2021,0,0,Apartment,apartment,1,As new,0,165,2,1,Hyper equipped,None,None,None,1,11,0,None,4
+https://www.immoweb.be/en/classified/house/for-sale/liege/4020/11128858,11128858,liege,4020,139000,F,1950,0,0,House,house,0,To be done,None,97,2,1,Semi equipped,None,None,81,1,22,0,None,2
+https://www.immoweb.be/en/classified/house/for-sale/ronse/9600/11128403,11128403,ronse,9600,245000,B,1925,0,0,House,house,1,As new,0,112,3,1,Installed,None,None,83,1,10,1,25,2
+https://www.immoweb.be/en/classified/house/for-sale/wetteren/9230/11128213,11128213,wetteren,9230,249000,B,1935,0,0,House,house,1,Good,0,90,2,1,Installed,None,None,90,0,None,0,None,2
+https://www.immoweb.be/en/classified/apartment/for-sale/wavre/1300/11129211,11129211,wavre,1300,269000,B,1992,0,0,Apartment,apartment,1,Good,None,100,2,1,Installed,None,None,None,1,6,0,None,2
+https://www.immoweb.be/en/classified/apartment/for-sale/neupre/4120/11128597,11128597,neupre,4120,279000,B,1999,0,0,Apartment,apartment,1,Good,0,127,3,1,Installed,None,None,None,0,None,0,None,2
+https://www.immoweb.be/en/classified/mixed-use-building/for-sale/antwerpen-merksem/2170/11128275,11128275,antwerpen-merksem,2170,429900,D,1919,0,1,House,mixed-use-building,1,Good,0,210,3,1,Installed,None,None,65,0,None,0,None,2
+https://www.immoweb.be/en/classified/apartment/for-sale/uccle/1180/11128144,11128144,uccle,1180,595000,G,1978,0,0,Apartment,apartment,0,To renovate,0,145,3,1,Installed,None,None,None,1,20,0,None,3
+https://www.immoweb.be/en/classified/duplex/for-sale/ixelles/1050/11128434,11128434,ixelles,1050,1150000,C,1958,0,0,Apartment,duplex,1,As new,0,220,3,1,Hyper equipped,None,None,None,1,30,0,None,3
+https://www.immoweb.be/en/classified/apartment/for-sale/deinze/9800/11128376,11128376,deinze,9800,270000,A,2022,0,0,Apartment,apartment,1,As new,0,61,1,1,Hyper equipped,None,None,None,1,10,0,None,2
+https://www.immoweb.be/en/classified/house/for-sale/ronse/9600/11125957,11125957,ronse,9600,119000,F,1930,0,0,House,house,0,To renovate,0,126,3,1,Semi equipped,None,None,230,1,8,1,130,2
+https://www.immoweb.be/en/classified/house/for-sale/ronse/9600/11125956,11125956,ronse,9600,169000,B,1997,0,0,House,house,1,Just renovated,0,117,3,1,Installed,None,None,80,0,None,1,17,2
+https://www.immoweb.be/en/classified/apartment/for-sale/liege/4000/11125650,11125650,liege,4000,179000,E,1950,0,0,Apartment,apartment,1,Good,None,102,2,1,Installed,None,None,None,1,8,0,None,2
+https://www.immoweb.be/en/classified/apartment/for-sale/brussel/1040/11131408,11131408,brussel,1040,485000,B,2014,0,0,Apartment,apartment,1,Good,None,100,2,None,None,None,None,None,1,19,0,None,None
+https://www.immoweb.be/en/classified/house/for-sale/dilbeek/1700/11131406,11131406,dilbeek,1700,589000,E,1965,0,0,House,house,1,Good,None,216,5,None,None,None,None,623,0,None,0,None,4
+https://www.immoweb.be/en/classified/penthouse/for-sale/woluwe-saint-pierre/1150/11131400,11131400,woluwe-saint-pierre,1150,398000,C,1932,0,0,Apartment,penthouse,1,Good,None,108,2,1,USA hyper equipped,None,None,None,1,21,0,None,2
+https://www.immoweb.be/en/classified/house/for-sale/gent/9000/11131397,11131397,gent,9000,365000,D,1932,0,0,House,house,1,Good,None,171,4,None,None,None,None,95,0,None,1,9,2
+https://www.immoweb.be/en/classified/house/for-sale/roeselare/8800/11131395,11131395,roeselare,8800,325000,A,None,None,0,House,house,1,Good,None,143,3,None,None,None,None,114,0,None,0,None,None
+https://www.immoweb.be/en/classified/house/for-sale/huy/4500/11131393,11131393,huy,4500,275000,A,2016,0,0,House,house,None,None,None,None,3,1,Installed,None,None,162,1,10,1,40,2
+https://www.immoweb.be/en/classified/apartment/for-sale/huy/4500/11131392,11131392,huy,4500,255000,B,2016,0,0,Apartment,apartment,None,None,None,None,2,1,Installed,None,None,None,1,10,0,None,None
+https://www.immoweb.be/en/classified/apartment/for-sale/huy/4500/11131391,11131391,huy,4500,285000,B,2016,0,0,Apartment,apartment,None,None,None,116,2,1,Installed,None,None,None,1,11,1,397,2
+https://www.immoweb.be/en/classified/apartment/for-sale/huy/4500/11131390,11131390,huy,4500,265000,B,2016,0,0,Apartment,apartment,None,None,None,112,2,1,Installed,None,None,None,1,14,1,79,3
+https://www.immoweb.be/en/classified/house/for-sale/verviers/4800/11131389,11131389,verviers,4800,99000,D,None,None,0,House,house,None,None,0,104,5,None,None,None,None,35,0,None,0,None,2
+https://www.immoweb.be/en/classified/villa/for-sale/zoersel/2980/11131388,11131388,zoersel,2980,535000,C,1976,0,0,House,villa,0,To be done,None,203,3,1,Installed,1,None,2106,0,None,1,1903,4
+https://www.immoweb.be/en/classified/house/for-sale/courcelles/6180/11131381,11131381,courcelles,6180,180000,E,None,None,0,House,house,1,Good,None,153,3,1,Installed,None,None,289,0,None,1,130,3
+https://www.immoweb.be/en/classified/house/for-sale/sluse/3700/11131376,11131376,sluse,3700,125000,F,None,None,0,House,house,0,To renovate,None,105,2,1,Semi equipped,None,None,1706,0,None,1,1500,2
+https://www.immoweb.be/en/classified/house/for-sale/turnhout/2300/11131366,11131366,turnhout,2300,265000,C,None,None,0,House,house,1,Good,None,150,4,1,Installed,None,None,176,0,None,0,None,2
+https://www.immoweb.be/en/classified/mixed-use-building/for-sale/rienne/5575/10365482,10365482,rienne,5575,205000,Notspecified,None,None,1,House,mixed-use-building,1,Good,None,None,4,1,USA hyper equipped,None,None,204,0,None,0,None,2
+https://www.immoweb.be/en/classified/house/for-sale/rienne/5575/10504949,10504949,rienne,5575,205000,Notspecified,None,None,0,House,house,1,Good,None,None,4,1,Hyper equipped,None,None,204,0,None,0,None,2
+https://www.immoweb.be/en/classified/apartment/for-sale/sint-idesbald/8670/11131360,11131360,sint-idesbald,8670,399000,B,2011,0,0,Apartment,apartment,None,None,0,76,2,1,Hyper equipped,None,None,None,0,None,0,None,3
+https://www.immoweb.be/en/classified/house/for-sale/heusy/4802/11131358,11131358,heusy,4802,260000,C,None,None,0,House,house,None,None,None,None,4,None,None,None,None,256,0,None,0,None,None
+https://www.immoweb.be/en/classified/ground-floor/for-sale/lebbeke/9280/11131356,11131356,lebbeke,9280,238000,B,2013,0,0,Apartment,ground-floor,1,As new,None,71,1,None,None,None,None,None,0,None,1,60,2
+https://www.immoweb.be/en/classified/house/for-sale/arlon/6700/10962131,10962131,arlon,6700,360000,E,None,None,0,House,house,1,Good,None,273,4,1,Installed,None,None,636,0,None,0,None,2
+https://www.immoweb.be/en/classified/house/for-sale/verviers/4800/11131351,11131351,verviers,4800,318444,Notspecified,2023,1,0,House,house,1,As new,0,140,4,None,None,None,None,185,1,20,1,20,2
+https://www.immoweb.be/en/classified/house/for-sale/assesse/5330/11131339,11131339,assesse,5330,269000,F,None,None,0,House,house,1,Good,0,191,2,None,None,None,None,1261,1,32,1,852,3
+https://www.immoweb.be/en/classified/mixed-use-building/for-sale/nismes/5670/11131338,11131338,nismes,5670,310000,C,None,None,1,House,mixed-use-building,1,Good,None,345,4,None,None,None,None,None,1,18,0,None,2
+https://www.immoweb.be/en/classified/apartment/for-sale/knokke-heist/8300/11131337,11131337,knokke-heist,8300,845000,C,1976,0,0,Apartment,apartment,1,Just renovated,0,86,3,1,USA hyper equipped,None,None,None,1,4,0,None,2
+https://www.immoweb.be/en/classified/house/for-sale/herve%20xhendelesse/4652/11131336,11131336,herve%20xhendelesse,4652,365000,C,None,None,0,House,house,1,Good,0,400,8,1,Installed,None,None,860,1,145,0,None,3
+https://www.immoweb.be/en/classified/house/for-sale/herve/4650/11131335,11131335,herve,4650,365000,C,None,None,0,House,house,1,Good,0,400,8,1,Installed,None,None,860,1,145,0,None,3
+https://www.immoweb.be/en/classified/ground-floor/for-sale/verviers/4800/11131334,11131334,verviers,4800,179000,D,None,None,0,Apartment,ground-floor,1,Good,0,111,2,1,Semi equipped,None,None,None,1,15,0,None,2
+https://www.immoweb.be/en/classified/villa/for-sale/dottignies/7711/11131333,11131333,dottignies,7711,439000,B,1974,0,0,House,villa,1,As new,0,88,2,1,Installed,None,None,2300,0,None,0,None,4
+https://www.immoweb.be/en/classified/house/for-sale/herseaux/7712/11131332,11131332,herseaux,7712,429000,C,None,None,0,House,house,1,As new,0,425,4,1,Installed,None,None,454,0,None,1,70,3
+https://www.immoweb.be/en/classified/villa/for-sale/mouscron/7700/11039025,11039025,mouscron,7700,419000,B,1989,0,0,House,villa,1,As new,0,194,4,1,Installed,None,None,560,0,None,1,330,4

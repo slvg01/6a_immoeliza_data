@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import time
 
 class Immoweb_Scraper:
     """
@@ -19,12 +20,12 @@ class Immoweb_Scraper:
         self.immoweb_urls_list = []
         self.element_list = ["Construction year","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", 
                              "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition",
-                             "Energy class","Primary energy consumption"]
+                             "Energy class"]
         self.data_set = []
         self.dataset_df = pd.DataFrame(columns=["url", "Property ID", "Locality name", "Postal code", 
                                                  "Subtype of property", "Open Fire", "Price"] + self.element_list)
         self.numpages = numpages
-    
+        self.session = requests.Session()
     def get_base_urls(self):
         """
         Get the list of base URLs after applying the filter.
@@ -48,6 +49,7 @@ class Immoweb_Scraper:
         Returns:
         - list: List of Immoweb URLs.
         """
+        self.session = session
         self.base_urls_list = self.get_base_urls()
         for each_url in self.base_urls_list:
             url_content = session.get(each_url).content
@@ -67,9 +69,9 @@ class Immoweb_Scraper:
         Returns:
         - list: List of dictionaries containing scraped data.
         """
-        with requests.Session() as session:
-            self.immoweb_urls_list = self.get_immoweb_urls(session)
-            with ThreadPoolExecutor() as executor:
+        with requests.Session() as self.session:
+            self.immoweb_urls_list = self.get_immoweb_urls(self.session)
+            with ThreadPoolExecutor(max_workers=18) as executor:
                 print('Scraping in progress')
                 results = executor.map(self.process_url, self.immoweb_urls_list)
                 for result in results:
@@ -91,8 +93,8 @@ class Immoweb_Scraper:
         data_dict["Property ID"], data_dict["Locality name"], data_dict["Postal code"], data_dict["Subtype of property"] = each_url.split('/')[-1], each_url.split('/')[-3], each_url.split('/')[-2], each_url.split('/')[-5]
         print(each_url)
         # Scraping logic
-        with requests.Session() as session:
-            url_content = session.get(each_url).content
+        with requests.Session() as self.session:
+            url_content = self.session.get(each_url).content
         soup = BeautifulSoup(url_content, "lxml")
         try:
             for tag in soup.find("div",attrs={"id" : "classified-description-content-text"}).find_all("p"):
@@ -100,12 +102,16 @@ class Immoweb_Scraper:
                     data_dict["Open Fire"] = 1
                 else:
                     data_dict["Open Fire"] = 0
-        except AttributeError:
+        except:
             data_dict["Open Fire"] = 0
             print("AttributeError: 'NoneType' object has no attribute 'find'")
-        for tag in soup.find("p", attrs={"class": "classified__price"}):
-            if tag.text.startswith("€"):
-                data_dict["Price"] = tag.text.split(' ')[0][1:]
+        try:    
+            for tag in soup.find("p", attrs={"class": "classified__price"}):
+                if tag.text.startswith("€"):
+                    data_dict["Price"] = tag.text.split(' ')[0][1:]
+        except: 
+            data_dict["Price"] = 0
+            print("AttributeError: 'NoneType' object has no attribute 'find'")
         for tag in soup.find_all("tr", attrs={"class": "classified-table__row"}):
             for tag1 in tag.find_all("th", attrs={"class": "classified-table__header"}):
                 if tag1.string is not None:
@@ -139,12 +145,14 @@ class Immoweb_Scraper:
         """ 
         Convert the data_set DataFrame into CSV 
         """
-        self.data_set_df.to_csv('data/raw/data_set_RAW.csv', index=False)
+        self.data_set_df.to_csv('data/raw_data/data_set_RAW.csv', index=False)
+        print('A .csv file called "data_set_RAW.csv" has been generated. ')
+
 
     def Clean_DataFrame(self):
         """ 
-            allow to convert the data_set list of dict in a DataFrame 
-            allow to clean the dictionnary (inner aggregation, conversion, renaming )
+            Allow to convert the data_set list of dict in a DataFrame 
+            Allow to clean the DataFrame (inner aggregation, conversion, renaming )
         
         """
         self.data_set_df = self.Raw_DataFrame()
@@ -153,11 +161,10 @@ class Immoweb_Scraper:
         for col in col_to_conv:
             if col in self.data_set_df.columns:
                 self.data_set_df[col] = pd.to_numeric(self.data_set_df[col])
-        col_to_none = ['url','Property ID',	'Locality name','Postal code','Subtype of property', 'Open Fire','Price','Construction year', 'Subtype of property',  'Building condition','Furnished', 'Living area', 'Bedrooms', 'Kitchen type', 'Swimming pool', 'Surface of the plot', 'Terrace surface', 'Garden surface',	'Number of frontages']
+        col_to_none = ['Energy class','url','Property ID',	'Locality name','Postal code','Subtype of property', 'Open Fire','Price','Construction year', 'Subtype of property',  'Building condition','Furnished', 'Living area', 'Bedrooms', 'Kitchen type', 'Swimming pool', 'Surface of the plot', 'Terrace surface', 'Garden surface',	'Number of frontages']
         for col in col_to_none:
             if col in self.data_set_df.columns:
                 self.data_set_df.loc[self.data_set_df[col] == 0, col] = 'None'
-            #np.isnan(x) or
         self.data_set_df['TOS : New Construction'] = self.data_set_df['Construction year'].apply(lambda x: 'None'  if  x == 'None' else( 0 if x < 2023 else 1))
         self.data_set_df['TOS : Tenement building'] = self.data_set_df['Subtype of property'].apply(lambda x : 'None' if x == 'None' else (1 if x in ['mixed-use-building', 'apartment-block'] else 0))
         self.data_set_df['Type of property'] = self.data_set_df['Subtype of property'].apply(lambda x : 'None' if x == 'None' else ('Apartment' if x in ['apartment', 'loft', 'penthouse','duplex', 'ground-floor', 'flat-studio', 'service-flat'] else 'House'))
@@ -171,15 +178,9 @@ class Immoweb_Scraper:
         replace_dict2 = {'Hyperequipped': 'Hyper equipped', 'Semiequipped': 'Semi equipped', 'USAhyperequipped' : 'USA hyper equipped', 'USAinstalled':'USA installed', 'Notinstalled' : 'Not installed'}
         self.data_set_df['Building condition'] = self.data_set_df['Building condition'].replace(replace_dict1)
         self.data_set_df['Kitchen type'] = self.data_set_df['Kitchen type'].replace(replace_dict2)
-        self.data_set_df = self.data_set_df.rename(columns = {'url':'URL','Surface of the plot': 'Plot surface','Open Fire' :'Open fire', 'Locality name':'Locality', 'Subtype of property': 'Subtype', 'Living area':'Living suface', 'Bedrooms':'Nb of Bedrooms'})
-        new_col_order = ['URL','Property ID','Locality', 'Postal code', 'Price','Construction year','TOS : New Construction', 'TOS : Tenement building', 'Type of property', 'Subtype','Building conditon status', 'Building condition', 'Furnished', 'Living suface','Nb of Bedrooms','Kitchen equipped', 'Kitchen type','Open fire','Swimming pool','Plot surface', 'Terrace','Terrace surface','Garden', 'Garden surface', 'Number of frontages']
-        new_col_order = ['URL', 'Property ID', 'Locality', 'Postal code', 'Price', 'Construction year', 'TOS : New Construction', 'TOS : Tenement building', 'Type of property', 'Subtype', 'Building conditon status', 'Building condition', 'Furnished', 'Living suface', 'Nb of Bedrooms', 'Kitchen equipped', 'Kitchen type', 'Open fire', 'Swimming pool', 'Plot surface', 'Terrace', 'Terrace surface', 'Garden', 'Garden surface', 'Number of frontages']
-        if all(col in self.data_set_df.columns for col in new_col_order):
-            self.data_set_df = self.data_set_df[new_col_order]
-        else:
-            missing_cols = [col for col in new_col_order if col not in self.data_set_df.columns]
-            print(f"The following columns are missing: {missing_cols}")
-
+        self.data_set_df = self.data_set_df.rename(columns = {'url':'URL','Price': 'Price (euro)','Surface of the plot': 'Plot surface (sqm)','Open Fire' :'Open fire', 'Locality name':'Locality', 'Subtype of property': 'Subtype', 'Living area':'Living surface (sqm)', 'Bedrooms':'Nb of Bedrooms','Terrace surface': 'Terrace surface (sqm)','Garden surface':'Garden surface (sqm)'})
+        new_col_order = ['URL','Property ID','Locality', 'Postal code', 'Price (euro)','Energy class','Construction year','TOS : New Construction', 'TOS : Tenement building', 'Type of property', 'Subtype','Building conditon status', 'Building condition', 'Furnished', 'Living surface (sqm)','Nb of Bedrooms','Kitchen equipped', 'Kitchen type','Open fire','Swimming pool','Plot surface (sqm)', 'Terrace','Terrace surface (sqm)','Garden', 'Garden surface (sqm)', 'Number of frontages']
+        self.data_set_df = self.data_set_df[new_col_order]
         print(self.data_set_df.head(10))
         print('DataFrame is cleaned!')
         return self.data_set_df 
@@ -188,15 +189,19 @@ class Immoweb_Scraper:
         """ 
         Convert the data_set DataFrame into CSV 
         """
-        self.data_set_df.to_csv('data/clean_data/data_set_CEAN.csv', index=False)
+        self.data_set_df.to_csv('data/clean_data/data_set_CLEAN.csv', index=False)
+        print('A .csv file called "data_set_CLEAN.csv" has been generated. ')
 
-'''start = time.time()
-numpages = int(input('Enter number of pages:  '))
-# Example usage and testing:
+'''numpages = int(input('Enter number of pages:  '))
+start = time.time()
 immoscrap = Immoweb_Scraper(numpages)
 immoscrap.scrape_table_dataset()
-immoscrap.to_DataFrame()
-immoscrap.to_csv()
-
+immoscrap.update_dataset()
+immoscrap.Raw_DataFrame()
+immoscrap.to_csv_raw()
+immoscrap.Clean_DataFrame()
+immoscrap.to_csv_clean()
 end = time.time()
-print("Time Taken: {:.6f}s".format(end-start))'''
+print("Time Taken: {:.6f}s".format(end-start))
+print(f'for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages} scraped base urls')      
+exit('Thank you for using Immoweb Scraper!')'''
