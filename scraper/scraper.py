@@ -1,3 +1,4 @@
+
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
@@ -198,3 +199,4 @@ class Immoweb_Scraper:
         """
         self.data_set_df.to_csv('data/clean_data/data_set_CLEAN.csv', index=False)
         print('A .csv file called "data_set_CLEAN.csv" has been generated. ')
+
