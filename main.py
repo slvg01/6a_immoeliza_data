@@ -1,4 +1,4 @@
-from scraper.scraper4 import Immoweb_Scraper
+from scraper.scraper import Immoweb_Scraper
 import time
 
 def main():
