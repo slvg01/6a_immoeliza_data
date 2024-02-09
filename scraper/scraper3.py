@@ -130,7 +130,7 @@ class Immoweb_Scraper:
         """ 
         Convert the data_set DataFrame into CSV 
         """
-        self.data_set_df.to_csv('data\raw_data\data_set_RAW.csv', index=False)
+        self.data_set_df.to_csv('data\raw\data_set_RAW.csv', index=False)
 
     def Clean_DataFrame(self):
         """ 
@@ -171,7 +171,7 @@ class Immoweb_Scraper:
             print(f"The following columns are missing: {missing_cols}")
 
         print(self.data_set_df.head(10))
-        print('function ran')
+        print('DataFrame is cleaned!')
         return self.data_set_df 
 
     def to_csv_clean(self):
