@@ -35,7 +35,11 @@ class Immoweb_Scraper:
         """
         for i in range(1,self.numpages):
             base_url = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
+            base_url_house = f"https://www.immoweb.be/en/search/house/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
+            base_url_apartment = f"https://www.immoweb.be/en/search/apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
             self.base_urls_list.append(base_url)
+            self.base_urls_list.append(base_url_house)
+            self.base_urls_list.append(base_url_apartment)
         print(f'Number of Base URLs generated: {len(self.base_urls_list)}')
         return self.base_urls_list
 
