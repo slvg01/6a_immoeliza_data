@@ -193,17 +193,3 @@ class Immoweb_Scraper:
         """
         self.data_set_df.to_csv('data/clean_data/data_set_CLEAN.csv', index=False)
         print('A .csv file called "data_set_CLEAN.csv" has been generated. ')
-
-'''numpages = int(input('Enter number of pages:  '))
-start = time.time()
-immoscrap = Immoweb_Scraper(numpages)
-immoscrap.scrape_table_dataset()
-immoscrap.update_dataset()
-immoscrap.Raw_DataFrame()
-immoscrap.to_csv_raw()
-immoscrap.Clean_DataFrame()
-immoscrap.to_csv_clean()
-end = time.time()
-print("Time Taken: {:.6f}s".format(end-start))
-print(f'for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages} scraped base urls')      
-exit('Thank you for using Immoweb Scraper!')'''
