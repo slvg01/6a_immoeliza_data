@@ -59,4 +59,10 @@ Select the amount of pages you want to Scrape. For each page all properties are 
 [Sylvain Legay](https://github.com/slvg01)
 [Maarten Knaepen](https://github.com/MaartenKnaepen)
 
+## Visualization
+[![alt text](http://url/to/img)](https://www.nomnoml.com/#file/Immoweb%20Scraper%20Dependency%20Graph.png)
+
+
+
+
 
