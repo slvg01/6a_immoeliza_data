@@ -175,15 +175,15 @@ class Immoweb_Scraper:
                 self.data_set_df.loc[self.data_set_df[col] == 0, col] = 'None'
         self.data_set_df['TOS : New Construction'] = self.data_set_df['Construction year'].apply(lambda x: 'None'  if  x == 'None' else( 0 if x < 2023 else 1))
         self.data_set_df['TOS : Tenement building'] = self.data_set_df['Subtype of property'].apply(lambda x : 'None' if x == 'None' else (1 if x in ['mixed-use-building', 'apartment-block'] else 0))
-        self.data_set_df['Type of property'] = self.data_set_df['Subtype of property'].apply(lambda x : 'None' if x == 'None' else ('Apartment' if x in ['apartment', 'loft', 'penthouse','duplex', 'ground-floor', 'flat-studio', 'service-flat'] else 'House'))
+        self.data_set_df['Type of property'] = self.data_set_df['Subtype of property'].apply(lambda x : 'None' if x == 'None' else ('Apartment' if x in ['apartment', 'kot', 'triplex','loft', 'penthouse','duplex', 'ground-floor', 'flat-studio', 'service-flat'] else 'House'))
         self.data_set_df['Building conditon status'] = self.data_set_df['Building condition'].apply(lambda x : 'None' if x =='None' else ( 1 if x in ['Asnew', 'Good', 'Justrenovated'] else 0))
         self.data_set_df['Furnished'] = self.data_set_df['Furnished'].apply(lambda x : 'None' if x =='None' else (1 if x == 'yes' else 0))
-        self.data_set_df['Kitchen equipped'] = self.data_set_df['Kitchen type'].apply(lambda x : 'None' if x =='None' else (0 if x == 'Notinstalled' else 1))
+        self.data_set_df['Kitchen equipped'] = self.data_set_df['Kitchen type'].apply(lambda x : 'None' if x =='None' else (0 if x in ['Notinstalled','USAuninstalled'] else 1))
         self.data_set_df['Terrace'] = self.data_set_df['Terrace surface'].apply(lambda x : 0 if x == 'None' else ( 1 if x  > 0 else 0))
         self.data_set_df['Swimming pool'] = self.data_set_df['Swimming pool'].apply(lambda x : 'None' if x =='None' else (1 if x == 'yes' else 0))
         self.data_set_df['Garden'] = self.data_set_df['Garden surface'].apply(lambda x : 0 if x == 'None' else (1 if x  > 0 else 0))
         replace_dict1 = {'Asnew': 'As new', 'Justrenovated': 'Just renovated', 'Tobedoneup' : 'To be done', 'Torenovate':'To renovate'}
-        replace_dict2 = {'Hyperequipped': 'Hyper equipped', 'Semiequipped': 'Semi equipped', 'USAhyperequipped' : 'USA hyper equipped', 'USAinstalled':'USA installed', 'Notinstalled' : 'Not installed'}
+        replace_dict2 = {'Hyperequipped': 'Hyper equipped', 'Semiequipped': 'Semi equipped', 'USAhyperequipped' : 'USA hyper equipped', 'USAinstalled':'USA installed','USAuninstalled': 'USA uninstalled', 'Notinstalled' : 'Not installed'}
         self.data_set_df['Building condition'] = self.data_set_df['Building condition'].replace(replace_dict1)
         self.data_set_df['Kitchen type'] = self.data_set_df['Kitchen type'].replace(replace_dict2)
         self.data_set_df = self.data_set_df.rename(columns = {'url':'URL','Price': 'Price (euro)','Surface of the plot': 'Plot surface (sqm)','Open Fire' :'Open fire', 'Locality name':'Locality', 'Subtype of property': 'Subtype', 'Living area':'Living surface (sqm)', 'Bedrooms':'Nb of Bedrooms','Terrace surface': 'Terrace surface (sqm)','Garden surface':'Garden surface (sqm)'})
