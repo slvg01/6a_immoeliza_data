@@ -2,7 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-import time
+
 
 class Immoweb_Scraper:
     """
@@ -128,10 +128,9 @@ class Immoweb_Scraper:
 
     def update_dataset(self):
         """
-            Missing information on webpage is populated as 0
-            Exmaple : If the information regarding swimming pool 
-                      is not on webpage then in the dataset 
-                      Swimming pull will be updated to 0
+        Missing information on webpage is populated as 0
+        Example : If the information regarding swimming pool is not on webpage then
+        in the dataset Swimming pull will be updated to 0
         """
         for each_dict in self.data_set:
             dict_elem = []
@@ -199,4 +198,3 @@ class Immoweb_Scraper:
         """
         self.data_set_df.to_csv('data/clean_data/data_set_CLEAN.csv', index=False)
         print('A .csv file called "data_set_CLEAN.csv" has been generated. ')
-
