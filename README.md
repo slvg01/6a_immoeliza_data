@@ -24,6 +24,8 @@ Follow the on-screen prompts to:
 
 Select the amount of pages you want to Scrape. For each page all properties are scraped. Note that new real estate projects will be skipped because they contain separate links to available properties. These separate links are included in the scraped data.
 
+ATTENTION! For each pagenumber, a page with results for appartments and a separate page with results for houses are generated. This means that the actual number of base URLs that are scraped will be twice the number that you enter.
+
 ## Output
 | Variable name            | Content                                                               | Type    |
 | ------------------------ | --------------------------------------------------------------------- | ------- |
