@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+
 import time
 
 class Immoweb_Scraper:
@@ -35,7 +36,9 @@ class Immoweb_Scraper:
             to get the list of all base URLs which will allow  
             fetching 10000 URLs of House or Appartment for sale.
         """
+
         for i in range(1,5):
+
             base_url = f"https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
             self.base_urls_list.append(base_url)
         print('Base URLs generated!')
@@ -180,6 +183,6 @@ immoscrap = Immoweb_Scraper()
 immoscrap.scrape_table_dataset(url)
 immoscrap.to_DataFrame()
 immoscrap.to_csv()
-
 end = time.time()
 print("Time Taken: {:.6f}s".format(end-start))
+
