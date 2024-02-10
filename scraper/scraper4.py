@@ -78,7 +78,7 @@ class Immoweb_Scraper:
                 results = executor.map(self.process_url, self.immoweb_urls_list)
                 for result in results:
                     self.data_set.append(result)
-            return self.data_set
+        return self.data_set
 
     def process_url(self, each_url):
         """
@@ -194,7 +194,7 @@ class Immoweb_Scraper:
         self.data_set_df.to_csv('data/clean_data/data_set_CLEAN.csv', index=False)
         print('A .csv file called "data_set_CLEAN.csv" has been generated. ')
 
-'''numpages = int(input('Enter number of pages:  '))
+numpages = int(input('Enter number of pages:  '))
 start = time.time()
 immoscrap = Immoweb_Scraper(numpages)
 immoscrap.scrape_table_dataset()
@@ -206,4 +206,4 @@ immoscrap.to_csv_clean()
 end = time.time()
 print("Time Taken: {:.6f}s".format(end-start))
 print(f'for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages} scraped base urls')      
-exit('Thank you for using Immoweb Scraper!')'''
+exit('Thank you for using Immoweb Scraper!')
