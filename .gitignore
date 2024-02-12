@@ -174,3 +174,7 @@ appmap.yml
 sample.py
 data/raw_data/data_set_RAW.csv
 data/clean_data/data_set_CLEAN.csv
+scraper/scraper3.py
+scraper/scraper4.py
+scraper/scraper5.py
+scraper/scrapy_version.py

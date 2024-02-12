@@ -19,7 +19,7 @@ def main():
             immoscrap.to_csv_clean()
             end = time.time()
             print("Time Taken: {:.6f}s".format(end-start))
-            print(f'for {len(immoscrap.data_set_df)} rows on {len(immoscrap.immoweb_urls_list)} scraped base urls') 
+            print(f'rows on {len(immoscrap.immoweb_urls_list)} scraped base urls') 
             exit('Thank you for using Immoweb Scraper!')
 if __name__ == '__main__':
     main()
