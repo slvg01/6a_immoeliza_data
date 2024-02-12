@@ -16,18 +16,19 @@ def main():
     else:
         start = time.time()
         immoscrap = Immoweb_Scraper(numpages + 1)
-        immoscrap.scrape_table_dataset()
-        immoscrap.update_dataset()
-        immoscrap.Raw_DataFrame()
-        immoscrap.to_csv_raw()
-        immoscrap.Clean_DataFrame()
-        immoscrap.to_csv_clean()
+        immoscrap.get_immoweb_urls(immoscrap.session) 
+        #immoscrap.scrape_table_dataset()
+        #immoscrap.update_dataset()
+        #immoscrap.Raw_DataFrame()
+        #immoscrap.to_csv_raw()
+        #immoscrap.Clean_DataFrame()
+        #immoscrap.to_csv_clean()
         end = time.time()
         print("Time Taken: {:.6f}s".format(end - start))
-        print(
-            f"for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages + 1} scraped base urls"
-        )
-        exit("Thank you for using Immoweb Scraper!")
+        #print(
+        #    f"for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages + 1} scraped base urls"
+        #)
+        #exit("Thank you for using Immoweb Scraper!")
 
 
 if __name__ == "__main__":

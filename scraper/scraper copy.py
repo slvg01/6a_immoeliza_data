@@ -2,6 +2,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import time
 
 
 class Immoweb_Scraper:
@@ -12,10 +13,11 @@ class Immoweb_Scraper:
     def __init__(self, numpages) -> None:
         """
         Initialize the Immoweb_Scraper object.
+        Args: numpages (int): Number of pages to scrape.
 
-        Args:
-        - numpages (int): Number of pages to scrape.
         """
+        self.session = requests.Session()
+        self.numpages = numpages
         self.base_urls_list = []
         self.immoweb_urls_list = []
         self.element_list = [
@@ -33,27 +35,12 @@ class Immoweb_Scraper:
             "Energy class",
         ]
         self.data_set = []
-        self.dataset_df = pd.DataFrame(
-            columns=[
-                "url",
-                "Property ID",
-                "Locality name",
-                "Postal code",
-                "Subtype of property",
-                "Open Fire",
-                "Price",
-            ]
-            + self.element_list
-        )
-        self.numpages = numpages
-        self.session = requests.Session()
+       
 
     def get_base_urls(self):
         """
         Get the list of base URLs after applying the filter.
 
-        Returns:
-        - list: List of base URLs.
         """
         for i in range(1, self.numpages):
             base_url_house = f"https://www.immoweb.be/en/search/house/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
@@ -62,21 +49,17 @@ class Immoweb_Scraper:
             self.base_urls_list.append(base_url_apartment)
         print(f"Number of Base URLs generated: {len(self.base_urls_list)}")
         return self.base_urls_list
+    
 
-    def get_immoweb_urls(self, session):
+    def get_immoweb_urls(self):
         """
         Gets the list of Immoweb URLs from each page of base URLs.
-
-        Args:
-        - session (requests.Session): Session object for making HTTP requests.
-
-        Returns:
-        - list: List of Immoweb URLs.
+             
         """
-        self.session = session
+        
         self.base_urls_list = self.get_base_urls()
         for each_url in self.base_urls_list:
-            url_content = session.get(each_url).content
+            url_content = self.session.get(each_url).content
             soup = BeautifulSoup(url_content, "lxml")
             for tag in soup.find_all("a", attrs={"class": "card__title-link"}):
                 immoweb_url = tag.get("href")
@@ -88,15 +71,14 @@ class Immoweb_Scraper:
         self.immoweb_urls_list = list(dict.fromkeys(self.immoweb_urls_list))
         print(f"Number of Immoweb URLs generated: {len(self.immoweb_urls_list)}")
         return self.immoweb_urls_list
+    
 
     def scrape_table_dataset(self):
         """
-        Scrape data from Immoweb URLs.
+        Scrape data from all Immoweb URLs and append the results in a dictionnary 
 
-        Returns:
-        - list: List of dictionaries containing scraped data.
         """
-        with requests.Session() as self.session:
+        with self.session:
             self.immoweb_urls_list = self.get_immoweb_urls(self.session)
             with ThreadPoolExecutor(max_workers=18) as executor:
                 print("Scraping in progress")
@@ -104,33 +86,24 @@ class Immoweb_Scraper:
                 for result in results:
                     self.data_set.append(result)
             return self.data_set
+        
 
     def process_url(self, each_url):
         """
-        Process each URL to scrape data.
+        Scrape the data for one URL and return it in a dictionnary  : 
+            partly from the URL itself 
+            partly from the scraping of the HTML content of of tpage Process each URL to scrape data.
 
-        Args:
-        - each_url (str): URL to scrape.
-
-        Returns:
-        - dict: Dictionary containing scraped data.
         """
         data_dict = {}
         data_dict["url"] = each_url
-        (
-            data_dict["Property ID"],
-            data_dict["Locality name"],
-            data_dict["Postal code"],
-            data_dict["Subtype of property"],
-        ) = (
-            each_url.split("/")[-1],
-            each_url.split("/")[-3],
-            each_url.split("/")[-2],
-            each_url.split("/")[-5],
-        )
-        print(each_url)
+        data_dict["Property ID"] =each_url.split("/")[-1]
+        data_dict["Locality name"]=each_url.split("/")[-3]
+        data_dict["Postal code"]=each_url.split("/")[-2]
+        data_dict["Subtype of property"]=each_url.split("/")[-5]
+       
         # Scraping logic
-        with requests.Session() as self.session:
+        with self.session:
             url_content = self.session.get(each_url).content
         soup = BeautifulSoup(url_content, "lxml")
         try:
@@ -147,7 +120,7 @@ class Immoweb_Scraper:
         except:
             data_dict["Open Fire"] = 0
             print("AttributeError: 'NoneType' object has no attribute 'find'")
-        
+
 
         try:
             for tag in soup.find("p", attrs={"class": "classified__price"}):
@@ -157,7 +130,7 @@ class Immoweb_Scraper:
             data_dict["Price"] = 0
             print("AttributeError: 'NoneType' object has no attribute 'find'")
 
-
+            
         for tag in soup.find_all("tr", attrs={"class": "classified-table__row"}):
             for tag1 in tag.find_all("th", attrs={"class": "classified-table__header"}):
                 if tag1.string is not None:
@@ -171,6 +144,7 @@ class Immoweb_Scraper:
                             table_data = tag_text[start_loc + 1 : end_loc]
                             data_dict[element] = table_data
         return data_dict
+    
 
     def update_dataset(self):
         """
@@ -186,6 +160,7 @@ class Immoweb_Scraper:
                 if each_value not in dict_elem:
                     each_dict[each_value] = 0
         return self.data_set
+    
 
     def Raw_DataFrame(self):
         """
@@ -193,6 +168,7 @@ class Immoweb_Scraper:
         """
         self.data_set_df = pd.DataFrame(self.data_set)
         return self.data_set_df
+    
 
     def to_csv_raw(self):
         """
@@ -200,6 +176,7 @@ class Immoweb_Scraper:
         """
         self.data_set_df.to_csv("data/raw_data/data_set_RAW.csv", index=False)
         print('A .csv file called "data_set_RAW.csv" has been generated. ')
+
 
     def Clean_DataFrame(self):
         """
@@ -248,18 +225,16 @@ class Immoweb_Scraper:
         for col in col_to_none:
             if col in self.data_set_df.columns:
                 self.data_set_df.loc[self.data_set_df[col] == 0, col] = "None"
-        
         self.data_set_df["TOS : New Construction"] = self.data_set_df[
             "Construction year"
         ].apply(lambda x: "None" if x == "None" else (0 if x < 2023 else 1))
-        
         self.data_set_df["TOS : Tenement building"] = self.data_set_df[
             "Subtype of property"
-        ].apply( 
-            lambda x: "None" if x == "None"
+        ].apply(
+            lambda x: "None"
+            if x == "None"
             else (1 if x in ["mixed-use-building", "apartment-block"] else 0)
         )
-        
         self.data_set_df["Type of property"] = self.data_set_df[
             "Subtype of property"
         ].apply(
@@ -301,7 +276,7 @@ class Immoweb_Scraper:
             lambda x: 0 if x == "None" else (1 if x > 0 else 0)
         )
         self.data_set_df["Swimming pool"] = self.data_set_df["Swimming pool"].apply(
-            lambda x: "None" if x == "None" else (1 if x == "yes" else 0)
+            lambda x: "None" if x == "None" else (1 if x == "Yes" else 0)
         )
         self.data_set_df["Garden"] = self.data_set_df["Garden surface"].apply(
             lambda x: 0 if x == "None" else (1 if x > 0 else 0)
@@ -372,6 +347,7 @@ class Immoweb_Scraper:
         print(self.data_set_df.head(10))
         print("DataFrame is cleaned!")
         return self.data_set_df
+    
 
     def to_csv_clean(self):
         """
@@ -379,3 +355,43 @@ class Immoweb_Scraper:
         """
         self.data_set_df.to_csv("data/clean_data/data_set_CLEAN.csv", index=False)
         print('A .csv file called "data_set_CLEAN.csv" has been generated. ')
+
+#--------------------------
+
+
+def main():
+    max = 333
+    print(
+        "Welcome to Immoweb Scraper!\n"
+        "Enter how many pages you want to scrape (max 333 pages)"
+    )
+    numpages = int(input("Enter number of pages:  "))
+    if numpages > max:
+        exit(
+            f"You have exceeded the maximum of scrapeable pages. Choose a number lower than {max}"
+        )
+    else:
+        start = time.time()
+        immoscrap = Immoweb_Scraper(numpages + 1)
+        immoscrap.get_immoweb_urls()
+        print(immoscrap.immoweb_urls_list)
+        end = time.time()
+        print("Time Taken: {:.2f}s".format(end - start))
+
+
+if __name__ == "__main__":
+    main()
+
+
+"""immoscrap.scrape_table_dataset()
+        immoscrap.update_dataset()
+        immoscrap.Raw_DataFrame()
+        immoscrap.to_csv_raw()
+        immoscrap.Clean_DataFrame()
+        immoscrap.to_csv_clean()
+        print(
+            f"for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages + 1} scraped base urls"
+        )
+        exit("Thank you for using Immoweb Scraper!")"""
+
+
