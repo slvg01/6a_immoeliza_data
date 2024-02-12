@@ -19,9 +19,10 @@ class Immoweb_Scraper:
         """
         self.base_urls_list = []
         self.immoweb_urls_list = []
-        self.element_list = ["Construction year","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", 
-                             "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition",
-                             "Energy class"]
+        self.element_list = ["Construction year","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface",
+                "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition",
+                "Energy class","Tenement building","Flood zone type","Double glazing","Heating type","Bathrooms",
+                "Elevator","Accessible for disabled people","Outdoor parking spaces","Covered parking spaces","Shower rooms"]
         self.data_set = []
         self.dataset_df = pd.DataFrame(columns=["url", "Property ID", "Locality name", "Postal code", 
                                                  "Subtype of property", "Open Fire", "Price"] + self.element_list)
@@ -139,7 +140,7 @@ class Immoweb_Scraper:
                 dict_elem.append(each_element)
             for each_value in self.element_list:
                 if each_value not in dict_elem:
-                    each_dict[each_value] = 0
+                    each_dict[each_value] = None
         return(self.data_set)
 
     def Raw_DataFrame(self):
@@ -147,6 +148,9 @@ class Immoweb_Scraper:
         Convert the data_set list of dict into a DataFrame 
         """
         self.data_set_df = pd.DataFrame(self.data_set)
+        print(self.data_set_df.info())
+        print(self.data_set_df.describe())
+        print(self.data_set_df.isna().sum())
         return self.data_set_df
 
     def to_csv_raw(self):

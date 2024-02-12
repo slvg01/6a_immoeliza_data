@@ -20,12 +20,12 @@ def main():
         immoscrap.update_dataset()
         immoscrap.Raw_DataFrame()
         immoscrap.to_csv_raw()
-        immoscrap.Clean_DataFrame()
-        immoscrap.to_csv_clean()
+        #immoscrap.Clean_DataFrame()
+        #immoscrap.to_csv_clean()
         end = time.time()
         print("Time Taken: {:.6f}s".format(end - start))
         print(
-            f"for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages + 1} scraped base urls"
+            f"for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages } scraped base urls"
         )
         exit("Thank you for using Immoweb Scraper!")
 
