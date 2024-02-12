@@ -25,8 +25,6 @@ class Immoweb_Scraper:
                 "Energy class","Tenement building","Flood zone type","Double glazing","Heating type","Bathrooms",
                 "Elevator","Accessible for disabled people","Outdoor parking spaces","Covered parking spaces","Shower rooms"]
         self.data_set = []
-        self.dataset_df = pd.DataFrame(columns=["url", "Property ID", "Locality name", "Postal code", 
-                                                 "Subtype of property", "Open Fire", "Price"] + self.element_list)
         self.numpages = numpages
         #self.session = requests.Session()
     def get_base_urls(self):
@@ -114,14 +112,14 @@ class Immoweb_Scraper:
                     data_dict["Open Fire"] = 0
         except:
             data_dict["Open Fire"] = 0
-            print("AttributeError: 'NoneType' object has no attribute 'find'")
+            #print("AttributeError: 'NoneType' object has no attribute 'find'")
         try:    
             for tag in soup.find("p", attrs={"class": "classified__price"}):
                 if tag.text.startswith("€"):
                     data_dict["Price"] = tag.text.split(' ')[0][1:]
         except: 
             data_dict["Price"] = 0
-            print("AttributeError: 'NoneType' object has no attribute 'find'")
+            #print("AttributeError: 'NoneType' object has no attribute 'find'")
         for tag in soup.find_all("tr"):
             for tag1 in tag.find_all("th", attrs={"class": "classified-table__header"}):
                 if tag1.string is not None:
@@ -130,8 +128,7 @@ class Immoweb_Scraper:
                             tag_text = str(tag.td).strip().replace("\n", "").replace(" ", "")
                             start_loc = tag_text.find('>')
                             end_loc = tag_text.find('<', tag_text.find('<') + 1)
-                            table_data = tag_text[start_loc + 1:end_loc]
-                            data_dict[element] = table_data
+                            data_dict[element] = tag_text[start_loc + 1:end_loc]
         return data_dict
 
     def update_dataset(self):
