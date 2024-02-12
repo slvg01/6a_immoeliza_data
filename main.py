@@ -1,7 +1,6 @@
 from scraper.scraper import Immoweb_Scraper
 import time
 
-
 def main():
     max = 333
     print(
