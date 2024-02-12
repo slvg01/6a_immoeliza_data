@@ -3,6 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import time
 
 
 class Immoweb_Scraper:
@@ -19,14 +20,13 @@ class Immoweb_Scraper:
         """
         self.base_urls_list = []
         self.immoweb_urls_list = []
-        self.element_list = ["Construction year","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface", 
-                             "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition",
-                             "Energy class"]
+        self.element_list = ["Construction year","Bedrooms","Living area","Kitchen type","Furnished","Terrace surface",
+                "Surface of the plot","Garden surface","Number of frontages","Swimming pool","Building condition",
+                "Energy class","Tenement building","Flood zone type","Double glazing","Heating type","Bathrooms",
+                "Elevator","Accessible for disabled people","Outdoor parking spaces","Covered parking spaces","Shower rooms"]
         self.data_set = []
-        self.dataset_df = pd.DataFrame(columns=["url", "Property ID", "Locality name", "Postal code", 
-                                                 "Subtype of property", "Open Fire", "Price"] + self.element_list)
         self.numpages = numpages
-        self.session = requests.Session()
+        #self.session = requests.Session()
     def get_base_urls(self):
         """
         Get the list of base URLs after applying the filter.
@@ -42,7 +42,7 @@ class Immoweb_Scraper:
         print(f'Number of Base URLs generated: {len(self.base_urls_list)}')
         return self.base_urls_list
 
-    def get_immoweb_urls(self, session):
+    def get_immoweb_url(self, url):
         """
         Gets the list of Immoweb URLs from each page of base URLs.
         
@@ -52,17 +52,23 @@ class Immoweb_Scraper:
         Returns:
         - list: List of Immoweb URLs.
         """
-        self.session = session
+        url_content = requests.get(url).content  # Fetch content of the URL
+        lst = []
+        soup = BeautifulSoup(url_content, "lxml")
+        for tag in soup.find_all("a", attrs={"class": "card__title-link"}):
+            immoweb_url = tag.get("href")
+            if "www.immoweb.be" in immoweb_url and "new-real-estate-project" not in immoweb_url:
+                lst.append(immoweb_url)
+        return lst 
+        
+
+    def get_immoweb_urls_thread(self):
         self.base_urls_list = self.get_base_urls()
-        for each_url in self.base_urls_list:
-            url_content = session.get(each_url).content
-            soup = BeautifulSoup(url_content, "lxml")
-            for tag in soup.find_all("a", attrs={"class": "card__title-link"}):
-                immoweb_url = tag.get("href")
-                if "www.immoweb.be" in immoweb_url and "new-real-estate-project" not in immoweb_url:
-                    self.immoweb_urls_list.append(immoweb_url)
-        self.immoweb_urls_list = list(dict.fromkeys(self.immoweb_urls_list))
-        print(f'Number of Immoweb URLs generated: {len(self.immoweb_urls_list)}')
+        with ThreadPoolExecutor(max_workers=18) as executor:
+                print('Generating urls')
+                results = executor.map(lambda url: self.get_immoweb_url(url), self.base_urls_list)
+                for result in results:
+                    self.immoweb_urls_list.extend(result)
         return self.immoweb_urls_list
 
     def scrape_table_dataset(self):
@@ -72,14 +78,13 @@ class Immoweb_Scraper:
         Returns:
         - list: List of dictionaries containing scraped data.
         """
-        with requests.Session() as self.session:
-            self.immoweb_urls_list = self.get_immoweb_urls(self.session)
-            with ThreadPoolExecutor(max_workers=18) as executor:
-                print('Scraping in progress')
-                results = executor.map(self.process_url, self.immoweb_urls_list)
-                for result in results:
-                    self.data_set.append(result)
-            return self.data_set
+        self.immoweb_urls_list = self.get_immoweb_urls_thread()
+        with ThreadPoolExecutor(max_workers=18) as executor:
+            print('Scraping in progress')
+            results = executor.map(self.process_url, self.immoweb_urls_list)
+            for result in results:
+                self.data_set.append(result)
+        return self.data_set
 
     def process_url(self, each_url):
         """
@@ -96,8 +101,8 @@ class Immoweb_Scraper:
         data_dict["Property ID"], data_dict["Locality name"], data_dict["Postal code"], data_dict["Subtype of property"] = each_url.split('/')[-1], each_url.split('/')[-3], each_url.split('/')[-2], each_url.split('/')[-5]
         print(each_url)
         # Scraping logic
-        with requests.Session() as self.session:
-            url_content = self.session.get(each_url).content
+        #with requests.Session() as self.session:
+        url_content = requests.get(each_url).content
         soup = BeautifulSoup(url_content, "lxml")
         try:
             for tag in soup.find("div",attrs={"id" : "classified-description-content-text"}).find_all("p"):
@@ -107,14 +112,14 @@ class Immoweb_Scraper:
                     data_dict["Open Fire"] = 0
         except:
             data_dict["Open Fire"] = 0
-            print("AttributeError: 'NoneType' object has no attribute 'find'")
+            #print("AttributeError: 'NoneType' object has no attribute 'find'")
         try:    
             for tag in soup.find("p", attrs={"class": "classified__price"}):
                 if tag.text.startswith("€"):
                     data_dict["Price"] = tag.text.split(' ')[0][1:]
         except: 
             data_dict["Price"] = 0
-            print("AttributeError: 'NoneType' object has no attribute 'find'")
+            #print("AttributeError: 'NoneType' object has no attribute 'find'")
         for tag in soup.find_all("tr"):
             for tag1 in tag.find_all("th", attrs={"class": "classified-table__header"}):
                 if tag1.string is not None:
@@ -123,8 +128,7 @@ class Immoweb_Scraper:
                             tag_text = str(tag.td).strip().replace("\n", "").replace(" ", "")
                             start_loc = tag_text.find('>')
                             end_loc = tag_text.find('<', tag_text.find('<') + 1)
-                            table_data = tag_text[start_loc + 1:end_loc]
-                            data_dict[element] = table_data
+                            data_dict[element] = tag_text[start_loc + 1:end_loc]
         return data_dict
 
     def update_dataset(self):
@@ -139,7 +143,7 @@ class Immoweb_Scraper:
                 dict_elem.append(each_element)
             for each_value in self.element_list:
                 if each_value not in dict_elem:
-                    each_dict[each_value] = 0
+                    each_dict[each_value] = None
         return(self.data_set)
 
     def Raw_DataFrame(self):
@@ -147,6 +151,9 @@ class Immoweb_Scraper:
         Convert the data_set list of dict into a DataFrame 
         """
         self.data_set_df = pd.DataFrame(self.data_set)
+        print(self.data_set_df.info())
+        print(self.data_set_df.describe())
+        print(self.data_set_df.isna().sum())
         return self.data_set_df
 
     def to_csv_raw(self):
