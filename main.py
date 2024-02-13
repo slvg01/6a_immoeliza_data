@@ -1,4 +1,4 @@
-from scraper.scraper import Immoweb_Scraper
+from scraper.scraper6 import Immoweb_Scraper
 import time
 
 def main():
@@ -23,9 +23,7 @@ def main():
         #immoscrap.to_csv_clean()
         end = time.time()
         print("Time Taken: {:.6f}s".format(end - start))
-        print(
-            f"for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages } scraped base urls"
-        )
+        print(f"for {len(immoscrap.data_set_df)} rows on {immoscrap.numpages } scraped base urls")
         exit("Thank you for using Immoweb Scraper!")
 
 

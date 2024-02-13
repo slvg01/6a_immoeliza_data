@@ -178,3 +178,9 @@ scraper/scraper3.py
 scraper/scraper4.py
 scraper/scraper5.py
 scraper/scrapy_version.py
+data/raw_data/data_set_RAW_APARTMENTS.csv
+data/raw_data/data_set_RAW_full.csv
+data/raw_data/data_set_RAW_HOUSES.csv
+data/raw_data/data_set_RAW_unique.csv
+data/raw_data/data_set_RAW2.csv
+data/raw_data/data_set_RAW5.csv
