@@ -25,7 +25,37 @@ Follow the on-screen prompts to:
 Select the amount of pages you want to Scrape. For each page all properties are scraped. Note that new real estate projects will be skipped because they contain separate links to available properties. These separate links are included in the scraped data.
 
 ## First Output = data_set_RAW
-
+|Variable name                 |Content                                                                                                                        |Type   |
+|------------------------------|-------------------------------------------------------------------------------------------------------------------------------|-------|
+|URL                           |URL to access the property                                                                                                     |string |
+|Property ID                   |Unique Identifier of the property                                                                                              |string |
+|Locality Name                 |Name of the city or village where the property is located                                                                      |string |
+|Postal code                   |Postal code of the locality                                                                                                    |string |
+|Subtype of property           |More detailed classification of the property type                                                                              |string |
+|Open fire                     |Flag for open fire. 1 is present, 0 is absent                                                                                  |integer|
+|Price                         |Price in euro of the property                                                                                                  |string |
+|Construction year             |Year the property was built                                                                                                    |string |
+|Building condition            |Description of the building condition                                                                                          |string |
+|Number of frontages           |Number of frontages the property has                                                                                           |string |
+|Covered parking spaces        |Number of Covered Parking each property has                                                                                    |string |
+|Outdoor parking spaces        |Number of Outdoor Parking each property has                                                                                    |string |
+|Living area                   |Surface of the living area in square meters                                                                                    |string |
+|Kitchen type                  |Description of the kitchen equipment                                                                                           |string |
+|Bedrooms                      |Number of bedrooms in the property                                                                                             |string |
+|Bathrooms                     |Number of bathrooms in the property                                                                                            |string |
+|Furnished                     |Yes' is furnished, 'No' is not furnished, '' is missing information                                                            |string |
+|Surface of the plot           |Surface of the entire plot (garden + living surface) in square meters                                                          |string |
+|Garden surface                |Surface of the garden in square meters                                                                                         |string |
+|Terrace surface               |Surface of the terrace in square meters                                                                                        |string |
+|Elevator                      |Yes' has elevator, 'No' does not has elevator, '' is missing information                                                       |string |
+|Accessible for disabled people|Yes' is accessible for disable people , 'No' is not accessible for disable people , '' is missing information                  |string |
+|Swimming pool                 |Yes' is present, 'No' is absent , '' is missing information                                                                    |string |
+|Energy class                  |Energy class of the property from A to F,Notspecified or '' if information is missing                                          |string |
+|Heating type                  |Type of Heating in property like Gas,Fueloil,Pellet,Electric etc. & '' if information is missing                               |string |
+|Double glazing                |Yes' is property has double glazing windows , 'No' is property does not have double glazing windows , '' is missing information|string |
+|Flood zone type               |Type of Flood Zone where the property is located like Nonfloodzone,Possiblefloodzone etc. &  '' is missing information         |string |
+|Tenement building             |Yes' is property is Tenement building  , 'No' is property not Tenement building, '' is missing information                     |string |
+|Shower rooms                  |Number of shower rooms in the property                                                                                         |string |
 
 ## Second output =  data_set_CLEAN
 This first Output is cleaned and transform using a function called Clean_DataFrame() and lodge within the scraper.py script. 
