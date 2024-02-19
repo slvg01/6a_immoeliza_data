@@ -24,35 +24,48 @@ Follow the on-screen prompts to:
 
 Select the amount of pages you want to Scrape. For each page all properties are scraped. Note that new real estate projects will be skipped because they contain separate links to available properties. These separate links are included in the scraped data.
 
-## Output
+## First Output = data_set_RAW
+
+
+## Second output =  data_set_CLEAN
+This first Output is cleaned and transform using a function called Clean_DataFrame() and lodge within the scraper.py script. 
+Removes duplicate rows based on the 'Property ID'.
+Filters out rows with incorrect postal codes (outside of belgium or mislabeled).
+Replaces specific patterns in the 'Locality name' column to have the more readable.
+Converts selected columns to numeric data type.
+Classifies properties into 'Apartment' or 'House' based on the 'Subtype of property'.
+Aggregates columns to create new features.
+Determines the province and region based on the postal code.
+Converts qualitative columns into boolean features.
+Reformats text in specific columns for better readability.
+Renames columns for clarity.
+Reorders columns for better organization.
+
+The final dataframe data_set_CLEAN has been adding the following columns under the following conditions :
+
 | Variable name            | Content                                                               | Type    |
 | ------------------------ | --------------------------------------------------------------------- | ------- |
-| URL                      | URL to access the property                                            | string  |
-| Property ID              | Unique Identifier of the property                                     | string  |
-| Locality                 | Name of the city or village where the property is located             | string  |
-| Postal code              | Postal code of the locality                                           | string  |
-| Price (euro)             | Price in euro of the property                                         | integer |
-| Energy class             | Energy class of the property from A to F                              | string  |
-| Construction year        | Year the property was built                                           | integer |
-| TOS : New Construction   | Flag for New construction. 1 for new, 0 for older                     | integer |
-| TOS : Tenement building  | Flag for tenement building. 1 for yes, 0 for no                       | integer |
-| Type of property         | Describes wether the property is a house or appartment                | string  |
-| Subtype                  | More detailed classification of the property type                     | string  |
-| Building conditon status | Flag for building condition. 1 for good, 0 for bad                    | integer |
-| Building condition       | Description of the building condition                                 | string  |
-| Furnished                | Flag for furnishing. 1 is furnished, 0 is not furnished               | integer |
-| Living surface (sqm)     | Surface of the living area in square meters                           | integer |
-| Nb of Bedrooms           | Number of bedrooms in the property                                    | integer |
-| Kitchen equipped         | Flag for kitchen equipment. 1 is equipped, 0 is not equipped          | integer |
-| Kitchen type             | Description of the kitchen equipment                                  | string  |
-| Open fire                | Flag for open fire. 1 is present, 0 is absent                         | integer |
-| Swimming pool            | Flag for swimming pool. 1 is present, 0 is absent                     | integer |
-| Plot surface (sqm)       | Surface of the entire plot (garden + living surface) in square meters | integer |
-| Terrace                  | Flag for terrace. 1 is present, 0 is absent                           | integer |
-| Terrace surface (sqm)    | Surface of the terrace in square meters                               | integer |
-| Garden                   | Flag for garden. 1 is present, 0 is absent                            | integer |
-| Garden surface (sqm)     | Surface of the garden in square meters                                | integer |
-| Number of frontages      | Number of frontages the property has                                  | integer |
+| province                 | set the belonging province of the localit based on postal code         | string  |
+| region                   | set the belonging region of the localit based on postal code               | string  |
+| Type of property         | Describes whether the property is a house or appartment               | string  |
+| New Construction Boolean | 1 if cnstruction year >= 2021, 0 for older                            | integer |
+| Building cond. boolean   | 1 if good or just renovated, 0 for the rest                           | Integer |
+| Energy class  boolean    | 1 for (B or better), 0 for the rest                                   | Integer |
+| Double glazing boolean   | 1 if existing, 0 if not                                               | Integer |
+| Elevator boolean         | 1 if existing, 0 if not                                               | Integer |
+| Accessible boolean       | 1  if accessible for disabled people, 0 if not                        | Integer |
+| Furnished boolean        | 1 is furnished, 0 is not furnished                                    | integer |
+|Bathrooms total nb        | add bathroom and shower room colomn                                   | integer |
+|Bathrooms total nb boolean| 1 is above 1 , 0 is below  rnished                                    | integer |
+| Kitchen equipped         | 1 is equipped (sevral tag see code), 0 is not equipped                | integer |
+| Open fire boolean        | Flag for open fire. 1 is present, 0 is absent                         | integer |
+| Swimming pool boolean    | 1 is present, 0 is absent                                             | integer |
+| Terrace boolean          |1 is present, 0 is absent                                              | integer |
+| Garden  boolean          | 1 is present, 0 is absent                                             | integer |
+| total parking            | add outddor and indoor parkig column numbers                          | integer |
+| parking  boolean         | 1 is more 1 or more parking, 0 is absent                              | integer |
+| Flood safe boolean       | 1 non flood zone , the rest is 0                                      | integer |
+| Tenement building        | Flag for tenement building. 1 for yes, 0 for no                       | integer |
 
 ## Contributors
 [Mahak Behl](https://github.com/MahakBehl)
@@ -62,7 +75,8 @@ Select the amount of pages you want to Scrape. For each page all properties are 
 [Maarten Knaepen](https://github.com/MaartenKnaepen)
 
 
-## Visualization
+## Code Visualization
+
 ![viz](https://github.com/slvg01/immo-eliza-scraping-Qbicle/blob/maarten/code%20viz.png)
 
 This figure displays how the Immoweb Scraper function runs. The first method called is scrape_table_dataset. This method calls the function get_imoweb_urls which in turn calls get_base_urls.
@@ -79,7 +93,8 @@ When all URLs are processed the Immoweb_Scraper object calls update_dataset to p
 
 Then the output, a list of dictionaries, is converted to a DataFrame. The DataFrame is then saved using the to_csv_raw function or further processed by clean_dataframe and then saved in another location by the to_csv_clean function.
 
+## Data set analysis and visualization
 
-
-
+a whole data set visualization notebook can be found in the Analysis folder 
+a presentation of the analysis of the dataframe can be seen in the Report folder 
 
