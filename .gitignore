@@ -188,3 +188,6 @@ data/clean_data/data_set_CLEAN.csv
 data/clean_data/data_set_CLEAN.csv
 data/clean_data/data_set_CLEAN.csv
 data/~$georef-belgium-postal-codes.xlsx
+scraper/message.txt
+scraper/scraper_copy.py
+data/raw_data/Raw_data_details.docx
