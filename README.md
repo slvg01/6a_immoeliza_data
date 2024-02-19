@@ -97,13 +97,6 @@ The final dataframe data_set_CLEAN has been adding the following columns under t
 | Flood safe boolean       | 1 non flood zone , the rest is 0                                      | integer |
 | Tenement building        | Flag for tenement building. 1 for yes, 0 for no                       | integer |
 
-## Contributors
-[Mahak Behl](https://github.com/MahakBehl)
-
-[Sylvain Legay](https://github.com/slvg01)
-
-[Maarten Knaepen](https://github.com/MaartenKnaepen)
-
 
 ## Code Visualization
 
@@ -128,3 +121,10 @@ Then the output, a list of dictionaries, is converted to a DataFrame. The DataFr
 a whole data set visualization notebook can be found in the Analysis folder 
 a presentation of the analysis of the dataframe can be seen in the Report folder 
 
+
+## Contributors
+[Mahak Behl](https://github.com/MahakBehl)
+
+[Sylvain Legay](https://github.com/slvg01)
+
+[Maarten Knaepen](https://github.com/MaartenKnaepen)
