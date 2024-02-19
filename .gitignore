@@ -178,3 +178,16 @@ scraper/scraper3.py
 scraper/scraper4.py
 scraper/scraper5.py
 scraper/scrapy_version.py
+data/raw_data/data_set_RAW_APARTMENTS.csv
+data/raw_data/data_set_RAW_full.csv
+data/raw_data/data_set_RAW_HOUSES.csv
+data/raw_data/data_set_RAW_unique.csv
+data/raw_data/data_set_RAW2.csv
+data/raw_data/data_set_RAW5.csv
+data/clean_data/data_set_CLEAN.csv
+data/clean_data/data_set_CLEAN.csv
+data/clean_data/data_set_CLEAN.csv
+data/~$georef-belgium-postal-codes.xlsx
+scraper/message.txt
+scraper/scraper_copy.py
+data/raw_data/Raw_data_details.docx

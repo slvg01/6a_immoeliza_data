@@ -1,10 +1,10 @@
-
 from concurrent.futures import ThreadPoolExecutor
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import time
-
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 class Immoweb_Scraper:
     """
@@ -26,7 +26,7 @@ class Immoweb_Scraper:
                 "Elevator","Accessible for disabled people","Outdoor parking spaces","Covered parking spaces","Shower rooms"]
         self.data_set = []
         self.numpages = numpages
-        #self.session = requests.Session()
+
     def get_base_urls(self):
         """
         Get the list of base URLs after applying the filter.
@@ -34,7 +34,7 @@ class Immoweb_Scraper:
         Returns:
         - list: List of base URLs.
         """
-        for i in range(1,self.numpages):
+        for i in range(1, self.numpages):
             base_url_house = f"https://www.immoweb.be/en/search/house/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
             base_url_apartment = f"https://www.immoweb.be/en/search/apartment/for-sale?countries=BE&isALifeAnnuitySale=false&page={i}&orderBy=relevance"
             self.base_urls_list.append(base_url_house)
@@ -47,28 +47,40 @@ class Immoweb_Scraper:
         Gets the list of Immoweb URLs from each page of base URLs.
         
         Args:
-        - session (requests.Session): Session object for making HTTP requests.
+        - url (str): Base URL to scrape Immoweb URLs from.
         
         Returns:
         - list: List of Immoweb URLs.
         """
-        url_content = requests.get(url).content  # Fetch content of the URL
-        lst = []
-        soup = BeautifulSoup(url_content, "lxml")
-        for tag in soup.find_all("a", attrs={"class": "card__title-link"}):
-            immoweb_url = tag.get("href")
-            if "www.immoweb.be" in immoweb_url and "new-real-estate-project" not in immoweb_url:
-                lst.append(immoweb_url)
-        return lst 
-        
+        try:
+            session = requests.Session()
+            retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+            session.mount('http://', HTTPAdapter(max_retries=retries))
+            session.mount('https://', HTTPAdapter(max_retries=retries))
+            response = session.get(url, timeout=10)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.content, "lxml")
+            immoweb_urls = [tag.get("href") for tag in soup.find_all("a", attrs={"class": "card__title-link"}) if
+                            tag.get("href") and "www.immoweb.be" in tag.get("href") and "new-real-estate-project" not in
+                            tag.get("href")]
+            return immoweb_urls
+        except Exception as e:
+            print(f"Error fetching Immoweb URLs from {url}: {e}")
+            return []
 
     def get_immoweb_urls_thread(self):
+        """
+        Get Immoweb URLs using multiple threads.
+        
+        Returns:
+        - list: List of Immoweb URLs.
+        """
         self.base_urls_list = self.get_base_urls()
         with ThreadPoolExecutor(max_workers=18) as executor:
-                print('Generating urls')
-                results = executor.map(lambda url: self.get_immoweb_url(url), self.base_urls_list)
-                for result in results:
-                    self.immoweb_urls_list.extend(result)
+            print('Generating urls')
+            results = executor.map(self.get_immoweb_url, self.base_urls_list)
+            for result in results:
+                self.immoweb_urls_list.extend(result)
         return self.immoweb_urls_list
 
     def scrape_table_dataset(self):
@@ -96,40 +108,50 @@ class Immoweb_Scraper:
         Returns:
         - dict: Dictionary containing scraped data.
         """
-        data_dict = {}
-        data_dict["url"] = each_url
-        data_dict["Property ID"], data_dict["Locality name"], data_dict["Postal code"], data_dict["Subtype of property"] = each_url.split('/')[-1], each_url.split('/')[-3], each_url.split('/')[-2], each_url.split('/')[-5]
-        print(each_url)
-        # Scraping logic
-        #with requests.Session() as self.session:
-        url_content = requests.get(each_url).content
-        soup = BeautifulSoup(url_content, "lxml")
         try:
-            for tag in soup.find("div",attrs={"id" : "classified-description-content-text"}).find_all("p"):
-                if any(keyword in tag.text.lower() for keyword in ["open haard", "cheminée", "feu ouvert", "open fire"]):
-                    data_dict["Open Fire"] = 1
-                else:
-                    data_dict["Open Fire"] = 0
-        except:
-            data_dict["Open Fire"] = 0
-            #print("AttributeError: 'NoneType' object has no attribute 'find'")
-        try:    
-            for tag in soup.find("p", attrs={"class": "classified__price"}):
-                if tag.text.startswith("€"):
-                    data_dict["Price"] = tag.text.split(' ')[0][1:]
-        except: 
-            data_dict["Price"] = 0
-            #print("AttributeError: 'NoneType' object has no attribute 'find'")
-        for tag in soup.find_all("tr"):
-            for tag1 in tag.find_all("th", attrs={"class": "classified-table__header"}):
-                if tag1.string is not None:
-                    for element in self.element_list:
-                        if element == tag1.string.strip():
-                            tag_text = str(tag.td).strip().replace("\n", "").replace(" ", "")
-                            start_loc = tag_text.find('>')
-                            end_loc = tag_text.find('<', tag_text.find('<') + 1)
-                            data_dict[element] = tag_text[start_loc + 1:end_loc]
-        return data_dict
+            data_dict = {}
+            data_dict["url"] = each_url
+            data_dict["Property ID"], data_dict["Locality name"], data_dict["Postal code"], data_dict[
+                "Subtype of property"] = each_url.split('/')[-1], each_url.split('/')[-3], each_url.split('/')[-2], \
+                                        each_url.split('/')[-5]
+            print(each_url)
+            session = requests.Session()
+            retries = Retry(total=5, backoff_factor=0.5, status_forcelist=[500, 502, 503, 504])
+            session.mount('http://', HTTPAdapter(max_retries=retries))
+            session.mount('https://', HTTPAdapter(max_retries=retries))
+            response = session.get(each_url, timeout=10)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.content, "lxml")
+
+            try:
+                for tag in soup.find("div",attrs={"id" : "classified-description-content-text"}).find_all("p"):
+                    if any(keyword in tag.text.lower() for keyword in ["open haard", "cheminée", "feu ouvert", "open fire"]):
+                        data_dict["Open Fire"] = 1
+                    else:
+                        data_dict["Open Fire"] = 0
+            except:
+                data_dict["Open Fire"] = 0
+                #print("AttributeError: 'NoneType' object has no attribute 'find'")
+            try:    
+                for tag in soup.find("p", attrs={"class": "classified__price"}):
+                    if tag.text.startswith("€"):
+                        data_dict["Price"] = tag.text.split(' ')[0][1:]
+            except: 
+                data_dict["Price"] = 0
+                #print("AttributeError: 'NoneType' object has no attribute 'find'")
+            for tag in soup.find_all("tr"):
+                for tag1 in tag.find_all("th", attrs={"class": "classified-table__header"}):
+                    if tag1.string is not None:
+                        for element in self.element_list:
+                            if element == tag1.string.strip():
+                                tag_text = str(tag.td).strip().replace("\n", "").replace(" ", "")
+                                start_loc = tag_text.find('>')
+                                end_loc = tag_text.find('<', tag_text.find('<') + 1)
+                                data_dict[element] = tag_text[start_loc + 1:end_loc]
+            return data_dict
+        except Exception as e:
+            print(f"Error processing URL {each_url}: {e}")
+        return {}
 
     def update_dataset(self):
         """
